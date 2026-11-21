@@ -4,11 +4,11 @@ node_modules/
 out/
 build/
 next-env.d.ts
+*.tsbuildinfo
 
 # Local environment & Vercel
 .env*.local
 .vercel
 
-# Keep skills folder lightweight in git while retaining the index
-skills/*
-!skills/SKILLS_INDEX.md
+# Local agent skills (kept on disk only, excluded from repo)
+skills/
