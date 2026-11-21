@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MythGame } from "@/components/play/myth-game";
 
 export const metadata: Metadata = {
-  title: "Fact or Myth",
+  title: "Fact or Myth · حقيقة أم خرافة",
   description:
     "Test what you know with 10 quick blood donation Fact or Myth statements.",
 };

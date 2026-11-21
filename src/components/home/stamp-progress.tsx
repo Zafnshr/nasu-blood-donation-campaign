@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { STAMPS_META } from "@/data/campaign";
+import { getStampsMeta } from "@/data/campaign";
+import { UI_COPY } from "@/data/translations";
 import { countStamps } from "@/lib/progress-store";
+import { usePreferences } from "@/lib/use-preferences";
 import { useProgress } from "@/lib/use-progress";
 import { Card } from "@/components/ui/card";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -11,6 +13,9 @@ import { Button } from "@/components/ui/button";
 
 export function StampProgress() {
   const progress = useProgress();
+  const { locale } = usePreferences();
+  const copy = UI_COPY[locale].home;
+  const stampsMeta = getStampsMeta(locale);
   const collected = countStamps(progress);
 
   return (
@@ -20,18 +25,17 @@ export function StampProgress() {
           <div>
             <h2
               id="stamps-heading"
-              className="text-lg font-bold tracking-tight text-ink sm:text-xl"
+              className="text-xl font-bold tracking-tight text-ink sm:text-2xl dark:text-[#f5f2f0]"
             >
-              You&apos;ve collected {collected}/4 stamps
+              {copy.stampsHeading(collected)}
             </h2>
-            <p className="mt-1 text-xs text-stone-600 sm:text-sm">
-              Explore each section to unlock all four stamps on the back of your
-              donor card.
+            <p className="mt-1 text-sm leading-relaxed text-stone-700 sm:text-base dark:text-stone-300">
+              {copy.stampsSub}
             </p>
           </div>
           {progress.card && (
             <Button href="/card" variant="secondary" size="sm">
-              View my card
+              {copy.viewMyCard}
             </Button>
           )}
         </div>
@@ -40,19 +44,19 @@ export function StampProgress() {
           <ProgressBar
             value={collected}
             max={4}
-            label="Campaign stamps collected"
+            label={copy.stampsHeading(collected)}
           />
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {STAMPS_META.map((stamp) => {
+          {stampsMeta.map((stamp) => {
             const earned = progress.stamps[stamp.key];
             return (
               <Link
                 key={stamp.key}
                 href={stamp.href}
                 title={stamp.hint}
-                className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 focus-visible:ring-offset-2"
+                className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#1c181a]"
               >
                 <StampBadge label={stamp.label} earned={earned} />
               </Link>

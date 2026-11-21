@@ -21,7 +21,7 @@ export function ProgressBar({
       aria-valuemin={0}
       aria-valuemax={safeMax}
       aria-valuenow={Math.min(safeMax, Math.max(0, value))}
-      className="h-2.5 w-full overflow-hidden rounded-full bg-blood-100"
+      className="h-2.5 w-full overflow-hidden rounded-full bg-blood-100 dark:bg-blood-950/80"
     >
       <div
         className={`h-full rounded-full transition-all duration-300 ease-out ${colorClass}`}

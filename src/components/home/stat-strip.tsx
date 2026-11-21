@@ -1,21 +1,36 @@
-import { HOME_STATS } from "@/data/campaign";
+"use client";
+
+import { motion } from "framer-motion";
+import { HOME_STATS_BY_LOCALE } from "@/data/campaign";
+import { usePreferences } from "@/lib/use-preferences";
 
 export function StatStrip() {
+  const { locale } = usePreferences();
+  const stats = HOME_STATS_BY_LOCALE[locale];
+
   return (
-    <section aria-label="Key blood donation facts" className="mt-8">
-      <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none] sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden">
-        {HOME_STATS.map((stat) => (
-          <div
+    <section aria-label="Key blood donation facts" className="mt-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {stats.map((stat, idx) => (
+          <motion.div
             key={stat.label}
-            className="min-w-[148px] shrink-0 snap-start rounded-2xl border border-blood-100/80 bg-white px-4 py-3.5 shadow-[0_4px_18px_rgba(76,5,25,0.04)] sm:min-w-0"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.05 }}
+            transition={{
+              duration: 0.3,
+              delay: idx * 0.05,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="rounded-2xl border border-stone-200/85 bg-white px-4 py-4 shadow-[0_4px_18px_rgba(28,25,23,0.04)] transition-colors dark:border-[#2e2629] dark:bg-[#1c181a] dark:shadow-[0_6px_22px_rgba(0,0,0,0.35)]"
           >
-            <p className="text-lg font-extrabold tracking-tight text-blood-600 sm:text-xl">
+            <p className="text-xl font-extrabold tracking-tight text-blood-600 sm:text-2xl dark:text-rose-400">
               {stat.value}
             </p>
-            <p className="mt-0.5 text-xs font-medium leading-snug text-stone-600">
+            <p className="mt-1 text-sm font-medium leading-snug text-stone-700 dark:text-stone-300">
               {stat.label}
             </p>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>

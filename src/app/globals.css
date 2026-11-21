@@ -1,23 +1,45 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), var(--font-arabic-face), ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: var(--font-arabic-face), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme {
-  --color-blood-50: #fff1f2;
-  --color-blood-100: #ffe4e6;
-  --color-blood-200: #fecdd3;
-  --color-blood-500: #f43f5e;
-  --color-blood-600: #e11d48;
-  --color-blood-700: #be123c;
-  --color-blood-800: #9f1239;
-  --color-blood-950: #4c0519;
-  --color-plasma-100: #fef3c7;
-  --color-plasma-400: #fbbf24;
-  --color-plasma-500: #f59e0b;
-  --color-cream: #fff7f5;
+  --color-blood-50: #fdf2f4;
+  --color-blood-100: #fbe4e8;
+  --color-blood-200: #f5c6cf;
+  --color-blood-500: #dc2f4d;
+  --color-blood-600: #c41e3a;
+  --color-blood-700: #a3162f;
+  --color-blood-800: #871227;
+  --color-blood-950: #450915;
+  --color-plasma-100: #fef5df;
+  --color-plasma-400: #eab308;
+  --color-plasma-500: #d97706;
+  --color-cream: #faf8f6;
   --color-ink: #1c1917;
+}
+
+html[dir="rtl"] {
+  --font-sans: var(--font-arabic-face), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+}
+
+html[dir="rtl"] body {
+  font-family: var(--font-arabic-face), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.75;
+}
+
+html[dir="rtl"] * {
+  letter-spacing: 0 !important;
+}
+
+html.dark body {
+  background-color: #121011;
+  color: #f5f2f0;
 }
 
 @layer base {
@@ -74,6 +96,40 @@
   }
 }
 
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  65%,
+  100% {
+    transform: translateX(260%) skewX(-18deg);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.22);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.22);
+    opacity: 0;
+  }
+}
+
 .animate-heartbeat {
   animation: heartbeat 2.4s ease-in-out infinite;
 }
@@ -83,9 +139,29 @@
   animation: ecg-draw 2.6s ease-in-out infinite;
 }
 
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+.group:hover .animate-marquee,
+.marquee-wrap:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+.animate-shimmer-sweep {
+  animation: shimmer-sweep 5.5s ease-in-out infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-heartbeat,
-  .animate-ecg {
+  .animate-ecg,
+  .animate-marquee,
+  .animate-shimmer-sweep,
+  .animate-pulse-ring {
     animation: none;
   }
 }

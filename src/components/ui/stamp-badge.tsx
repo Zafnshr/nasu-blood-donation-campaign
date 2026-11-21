@@ -14,17 +14,19 @@ export function StampBadge({
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full font-semibold transition-colors ${
-        compact ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs"
+        compact
+          ? "px-2.5 py-1 text-xs"
+          : "px-3.5 py-1.5 text-xs sm:text-sm"
       } ${
         earned
           ? "bg-gradient-to-br from-blood-600 to-blood-700 text-white shadow-xs"
-          : "border border-dashed border-stone-300 bg-stone-50 text-stone-500"
-      }`}
+          : "border border-dashed border-stone-300 bg-[#f6f3ef] text-stone-600 dark:border-stone-700 dark:bg-[#161214] dark:text-stone-300"
+        }`}
     >
       {earned ? (
-        <Award aria-hidden="true" className={compact ? "h-3 w-3" : "h-3.5 w-3.5"} />
+        <Award aria-hidden="true" className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
       ) : (
-        <Lock aria-hidden="true" className={compact ? "h-3 w-3" : "h-3.5 w-3.5"} />
+        <Lock aria-hidden="true" className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
       )}
       <span>{label}</span>
     </span>

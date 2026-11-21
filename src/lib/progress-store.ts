@@ -14,6 +14,30 @@ export const DEFAULT_PROGRESS: Progress = {
 };
 
 const listeners = new Set<() => void>();
+const stampUnlockListeners = new Set<(key: StampKey) => void>();
+
+export function subscribeStampUnlock(cb: (key: StampKey) => void): () => void {
+  stampUnlockListeners.add(cb);
+  return () => {
+    stampUnlockListeners.delete(cb);
+  };
+}
+
+function notifyStampUnlocks(prev: Progress, next: Progress) {
+  const keys: StampKey[] = [
+    "mythBuster",
+    "bloodScholar",
+    "typeExpert",
+    "donorReady",
+  ];
+  for (const key of keys) {
+    if (!prev.stamps[key] && next.stamps[key]) {
+      for (const cb of stampUnlockListeners) {
+        cb(key);
+      }
+    }
+  }
+}
 
 let cachedRaw: string | null | undefined = undefined;
 let cachedSnapshot: Progress = DEFAULT_PROGRESS;
@@ -101,6 +125,7 @@ export function updateProgress(updater: (prev: Progress) => Progress): void {
     }
   }
   notify();
+  notifyStampUnlocks(current, next);
 }
 
 export function awardStamp(key: StampKey): void {

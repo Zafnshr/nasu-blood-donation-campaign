@@ -16,12 +16,22 @@ export type StampKey =
   | "typeExpert"
   | "donorReady";
 
+export type CardTheme = "crimson" | "midnight" | "pearl";
+export type ThemeMode = "light" | "dark";
+export type Locale = "ar" | "en";
+
+export interface Preferences {
+  theme: ThemeMode;
+  locale: Locale;
+}
+
 export interface DonorCardData {
   name: string;
   bloodType: DonorBloodSelection;
   donatedToday: boolean;
   id: string;
   createdAt: string;
+  theme?: CardTheme;
 }
 
 export interface Progress {

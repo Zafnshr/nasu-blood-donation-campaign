@@ -1,4 +1,4 @@
-import type { BloodType, DonorBloodSelection } from "@/types";
+import type { BloodType, DonorBloodSelection, Locale } from "@/types";
 
 export const BLOOD_TYPES = [
   "O-",
@@ -75,7 +75,8 @@ export function plasmaRecipients(donor: BloodType): BloodType[] {
 
 export function describeRedCellCompatibility(
   donor: BloodType,
-  recipient: BloodType
+  recipient: BloodType,
+  locale: Locale = "en"
 ): string {
   const d = getAntigens(donor);
   const r = getAntigens(recipient);
@@ -85,21 +86,41 @@ export function describeRedCellCompatibility(
   if (d.b && !r.b) missing.push("B");
   if (d.rh && !r.rh) missing.push("RhD");
 
+  const dLabel = formatBloodType(donor);
+  const rLabel = formatBloodType(recipient);
+
+  if (locale === "ar") {
+    if (missing.length === 0) {
+      if (donor === "O-") {
+        return `فصيلة ${dLabel} لا تحمل مستضدات A أو B أو RhD، لذا فهي آمنة تماماً للمريض ${rLabel}.`;
+      }
+      const donorLabels: string[] = [];
+      if (d.a) donorLabels.push("A");
+      if (d.b) donorLabels.push("B");
+      if (d.rh) donorLabels.push("RhD");
+      if (donorLabels.length === 0) {
+        return `فصيلة ${dLabel} آمنة ولا تسبب أي تفاعل مناعي لدى ${rLabel}.`;
+      }
+      return `فصيلة ${rLabel} تحتوي بالفعل على ${donorLabels.join(" و ")}، لذلك كرات الدم الحمراء من ${dLabel} متوافقة وآمنة.`;
+    }
+    return `فصيلة ${dLabel} تحمل ${missing.join(" و ")} غير الموجودة لدى ${rLabel}، مما قد يسبب تفاعلاً مناعياً.`;
+  }
+
   if (missing.length === 0) {
     if (donor === "O-") {
-      return `O− has no A, B, or RhD antigens, so it's safe for ${formatBloodType(recipient)}.`;
+      return `O− has no A, B, or RhD antigens, so it's safe for ${rLabel}.`;
     }
     const donorLabels: string[] = [];
     if (d.a) donorLabels.push("A");
     if (d.b) donorLabels.push("B");
     if (d.rh) donorLabels.push("RhD");
     if (donorLabels.length === 0) {
-      return `O− has no antigens that ${formatBloodType(recipient)} reacts to.`;
+      return `O− has no antigens that ${rLabel} reacts to.`;
     }
-    return `${formatBloodType(recipient)} already carries ${donorLabels.join(" & ")}, so ${formatBloodType(donor)} red cells are a safe match.`;
+    return `${rLabel} already carries ${donorLabels.join(" & ")}, so ${dLabel} red cells are a safe match.`;
   }
 
-  return `${formatBloodType(donor)} carries ${missing.join(" & ")}, which ${formatBloodType(recipient)} doesn't have — that could trigger an immune reaction.`;
+  return `${dLabel} carries ${missing.join(" & ")}, which ${rLabel} doesn't have — that could trigger an immune reaction.`;
 }
 
 /**

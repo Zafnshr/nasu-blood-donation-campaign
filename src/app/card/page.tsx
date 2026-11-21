@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CardBuilder } from "@/components/card/card-builder";
 
 export const metadata: Metadata = {
-  title: "Donor Card",
+  title: "Donor Card · بطاقة المتبرع",
   description:
     "Create, flip, download, and share your personalized interactive NASU blood donor card.",
 };
