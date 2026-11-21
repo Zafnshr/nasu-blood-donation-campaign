@@ -1,0 +1,14 @@
+# Dependencies & build outputs
+node_modules/
+.next/
+out/
+build/
+next-env.d.ts
+
+# Local environment & Vercel
+.env*.local
+.vercel
+
+# Keep skills folder lightweight in git while retaining the index
+skills/*
+!skills/SKILLS_INDEX.md
