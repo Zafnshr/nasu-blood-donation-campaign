@@ -2,23 +2,23 @@
 
 An interactive, QR-code-first web experience built for the **NASU Blood Donation Campaign** — turning campus blood-drive outreach into an engaging, science-backed digital journey for donors and students.
 
-> **Status:** Environment & Repository Ready — Feature Planning In Progress  
-> The core Next.js foundation and organized folder architecture are set up and verified; interactive campaign modules are currently in planning.
+> **Status:** **Live — v1 complete**  
+> All five routes, interactive educational modules, personalized donor card builder, and local stamp progress system are built and verified.
 
 ---
 
-## About the Campaign
+## Features
 
-Designed to be launched right from campaign QR codes on campus, this web app combines clear medical education with interactive storytelling so visitors can learn how blood works, bust common donation myths, and leave with a personalized keepsake.
-
-### Planned Experience Modules
-
-- **Fact vs. Myth Interactive Game** — Bust common misconceptions around donating blood with quick, swipe-or-tap interactive rounds.
-- **Blood Basics & Components** — Clear visual breakdowns of blood composition, how the body regenerates and compensates after donation, and how collected blood is separated into RBCs, plasma, and platelets for distinct clinical uses.
-- **Blood Typing & Compatibility Explorer** — Understand ABO and Rh blood groups and how donor–recipient compatibility works.
-- **Why Donation Matters** — Real-world clinical impact showing who relies on donated blood and why every unit counts.
-- **Donation Journey & Aftercare** — Step-by-step walkthrough of what happens during donation and practical post-donation recovery tips.
-- **Interactive Blood Donor Card** — Enter your name and blood type to generate a custom interactive donor card.
+- **Home & Stamp Progress (`/`)** — Mobile-first campaign hub with pulsing blood-drop artwork, quick donation stats, guided journey tiles, and a 4-stamp progress tracker (`Myth Buster`, `Blood Scholar`, `Type Expert`, `Donor Ready`) saved in `localStorage`.
+- **Fact or Myth Game (`/play`)** — 10-card swipe-or-tap challenge busting common blood donation myths with instant explanations, score ring, confetti celebration, best-score tracking, and the `Myth Buster` stamp.
+- **Learn Hub (`/learn`)** — Interactive blood science across five sections:
+  - **Centrifuge Tube (`Blood 101`)** — Spin whole blood to separate and inspect plasma (55%), white cells & platelets (<1%), and red blood cells (~44%), unlocking `Blood Scholar`.
+  - **Made & Restored** — 4-step bone marrow regeneration flow and an interactive 0–84 day recovery slider.
+  - **Components & Collection Journey** — Storage, shelf life, and clinical uses for red cells, plasma, and platelets, plus the 5-step post-donation lab pipeline.
+  - **Blood Type Explorer** — Antigen cell diagram and red-cell give/receive compatibility grids across all 8 ABO/Rh types.
+  - **Match the Donor Mini-Game** — 5 quick clinical matching rounds with compatibility explanations, unlocking `Type Expert`.
+- **Donate Guide (`/donate`)** — Interactive `"one donation → up to 3 lives"` component split animation, 6 patient-need cards, a 7-question 30-second eligibility checker (unlocking `Donor Ready`), 4-step donation-day walkthrough, and tickable before/aftercare checklists.
+- **Interactive Donor Card (`/card`)** — Personalize a card with your name, blood type (or `"I don't know yet"`), and `"I donated today"` badge. Features 3D pointer tilt and glare, front/back flip revealing red-cell compatibility, earned stamps, and a QR code, plus high-DPI PNG **Download** and **Share**.
 
 ---
 
@@ -28,10 +28,17 @@ Designed to be launched right from campaign QR codes on campus, this web app com
 nasu-blood-donation-campaign/
 ├── public/                 # Static assets & campaign media
 ├── src/
-│   ├── app/                # Next.js App Router pages, layout & global styles
-│   ├── components/         # Reusable UI & interactive experience components
-│   ├── data/               # Campaign content, quizzes & blood datasets
-│   ├── lib/                # Utility helpers & shared logic
+│   ├── app/                # App Router routes (/, /play, /learn, /donate, /card) + metadata/icon
+│   ├── components/
+│   │   ├── card/           # Donor card builder, 3D tilt/flip card & PNG export
+│   │   ├── donate/         # Impact split, eligibility check, steps & checklists
+│   │   ├── home/           # Hero drop SVG, stat strip, journey tiles & stamp bar
+│   │   ├── layout/         # Sticky header, mobile bottom nav & footer
+│   │   ├── learn/          # Centrifuge, marrow flow, recovery slider, types & match game
+│   │   ├── play/           # Swipe/tap Fact or Myth game
+│   │   └── ui/             # Shared buttons, cards, chips, confetti, reveal & tabs
+│   ├── data/               # Campaign copy, myths, blood basics, blood types & donate data
+│   ├── lib/                # Blood compatibility logic & useSyncExternalStore progress store
 │   └── types/              # TypeScript interfaces & domain types
 ├── .gitignore              # Git ignore rules
 ├── eslint.config.mjs       # ESLint configuration
@@ -51,7 +58,7 @@ nasu-blood-donation-campaign/
 - **UI Library:** React 19
 - **Language:** TypeScript 5 (strict mode)
 - **Styling:** Tailwind CSS v4
-- **Motion & Icons:** Framer Motion, Lucide React
+- **Motion, Icons & Export:** Framer Motion, Lucide React, `html-to-image`, `qrcode.react`
 
 ---
 
@@ -81,3 +88,9 @@ Deploy directly with Vercel from GitHub:
 
 - **One-Click Vercel Import:** https://vercel.com/new/import?s=https://github.com/Zafnshr/nasu-blood-donation-campaign
 - **Repository:** https://github.com/Zafnshr/nasu-blood-donation-campaign
+
+---
+
+## Medical Disclaimer
+
+Educational content for awareness only. Eligibility and all medical decisions are made by qualified blood bank staff.

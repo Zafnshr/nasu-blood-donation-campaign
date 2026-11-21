@@ -1,1 +1,91 @@
 @import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme {
+  --color-blood-50: #fff1f2;
+  --color-blood-100: #ffe4e6;
+  --color-blood-200: #fecdd3;
+  --color-blood-500: #f43f5e;
+  --color-blood-600: #e11d48;
+  --color-blood-700: #be123c;
+  --color-blood-800: #9f1239;
+  --color-blood-950: #4c0519;
+  --color-plasma-100: #fef3c7;
+  --color-plasma-400: #fbbf24;
+  --color-plasma-500: #f59e0b;
+  --color-cream: #fff7f5;
+  --color-ink: #1c1917;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.06);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.04);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ecg-draw {
+  0% {
+    stroke-dashoffset: 180;
+    opacity: 0.35;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -180;
+    opacity: 0.35;
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2.4s ease-in-out infinite;
+}
+
+.animate-ecg {
+  stroke-dasharray: 180;
+  animation: ecg-draw 2.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-heartbeat,
+  .animate-ecg {
+    animation: none;
+  }
+}

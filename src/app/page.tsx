@@ -1,53 +1,69 @@
-import { CheckCircle2, FolderKanban, Rocket, Terminal } from "lucide-react";
+import { Heart } from "lucide-react";
+import { CAMPAIGN_INFO } from "@/data/campaign";
+import { Button } from "@/components/ui/button";
+import { HeroDrop } from "@/components/home/hero-drop";
+import { StatStrip } from "@/components/home/stat-strip";
+import { JourneyTiles } from "@/components/home/journey-tiles";
+import { StampProgress } from "@/components/home/stamp-progress";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-neutral-950 text-neutral-100 px-6 py-16">
-      <div className="w-full max-w-2xl rounded-2xl border border-neutral-800 bg-neutral-900/70 p-8 shadow-2xl">
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
-          <CheckCircle2 className="h-3.5 w-3.5" />
-          Environment Ready
-        </div>
-
-        <h1 className="mt-5 text-3xl font-semibold tracking-tight text-white">
-          NASU Blood Donation Campaign
-        </h1>
-        <p className="mt-3 text-sm leading-relaxed text-neutral-300">
-          Workspace scaffolding, Next.js + TypeScript + Tailwind CSS runtime,
-          GitHub repository setup, and the consolidated agent skills hub are
-          ready for planning and implementation.
-        </p>
-
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
-            <Terminal className="h-4 w-4 text-neutral-400" />
-            <p className="mt-2 text-xs uppercase tracking-wider text-neutral-500">
-              Stack
+    <div className="space-y-4">
+      <section className="rounded-3xl border border-blood-100/80 bg-white px-6 py-7 shadow-[0_12px_36px_rgba(76,5,25,0.06)] sm:px-8 sm:py-10">
+        <div className="grid items-center gap-6 md:grid-cols-[1.25fr_0.75fr]">
+          <div>
+            <p className="text-xs font-bold tracking-wide text-blood-600 uppercase">
+              {CAMPAIGN_INFO.fullTitle}
             </p>
-            <p className="mt-1 text-sm font-medium text-neutral-100">
-              Next.js 16 + Tailwind v4
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-ink sm:text-5xl sm:leading-[1.08]">
+              One donation.{" "}
+              <span className="text-blood-600">Up to three lives.</span>
+            </h1>
+            <p className="mt-4 max-w-[52ch] text-sm leading-relaxed text-stone-600 sm:text-base">
+              Bust the myths, meet your blood, and walk away with your own donor
+              card, all in about 5 minutes.
             </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button href="/play">Start the 2-min challenge</Button>
+              <Button href="/card" variant="secondary">
+                Make my donor card
+              </Button>
+            </div>
           </div>
-          <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
-            <FolderKanban className="h-4 w-4 text-neutral-400" />
-            <p className="mt-2 text-xs uppercase tracking-wider text-neutral-500">
-              Skills Hub
-            </p>
-            <p className="mt-1 text-sm font-medium text-neutral-100">
-              Consolidated in skills/
-            </p>
-          </div>
-          <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
-            <Rocket className="h-4 w-4 text-neutral-400" />
-            <p className="mt-2 text-xs uppercase tracking-wider text-neutral-500">
-              Status
-            </p>
-            <p className="mt-1 text-sm font-medium text-neutral-100">
-              Awaiting Feature Plan
-            </p>
+
+          <div className="order-first md:order-last">
+            <HeroDrop />
           </div>
         </div>
-      </div>
-    </main>
+      </section>
+
+      <StatStrip />
+      <JourneyTiles />
+      <StampProgress />
+
+      <section className="pt-4">
+        <div className="flex flex-col items-center justify-between gap-4 rounded-3xl bg-gradient-to-br from-blood-600 to-blood-800 px-6 py-6 text-center text-white shadow-lg shadow-blood-700/20 sm:flex-row sm:text-left">
+          <div className="flex items-center gap-3.5">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+              <Heart
+                aria-hidden="true"
+                className="animate-heartbeat h-5 w-5 fill-white text-white"
+              />
+            </span>
+            <p className="text-sm font-semibold leading-snug sm:text-base">
+              {CAMPAIGN_INFO.closingLine}
+            </p>
+          </div>
+          <Button
+            href="/donate"
+            variant="secondary"
+            size="sm"
+            className="shrink-0 border-white/20 bg-white text-blood-700 hover:bg-blood-50"
+          >
+            Check eligibility
+          </Button>
+        </div>
+      </section>
+    </div>
   );
 }
