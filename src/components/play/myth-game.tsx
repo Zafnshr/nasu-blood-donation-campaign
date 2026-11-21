@@ -306,13 +306,12 @@ export function MythGame() {
               reduced ? { opacity: 0 } : { opacity: 0, y: -12, scale: 0.96 }
             }
             transition={{ type: "spring", stiffness: 340, damping: 28 }}
-            className={`relative select-none overflow-hidden rounded-3xl border bg-white p-6 shadow-[0_12px_34px_rgba(28,25,23,0.08)] sm:p-8 dark:bg-[#1c181a] dark:shadow-[0_14px_38px_rgba(0,0,0,0.45)] ${
-              isAnswered
-                ? isCorrect
-                  ? "border-emerald-400 bg-emerald-50/40 dark:border-emerald-500/60 dark:bg-emerald-950/20"
-                  : "border-blood-400 bg-blood-50/40 dark:border-blood-500/60 dark:bg-blood-950/25"
-                : "cursor-grab border-stone-200/90 active:cursor-grabbing dark:border-[#2e2629]"
-            }`}
+            className={`relative select-none overflow-hidden rounded-3xl border bg-white p-6 shadow-[0_12px_34px_rgba(28,25,23,0.08)] sm:p-8 dark:bg-[#1c181a] dark:shadow-[0_14px_38px_rgba(0,0,0,0.45)] ${isAnswered
+              ? isCorrect
+                ? "border-emerald-400 bg-emerald-50/40 dark:border-emerald-500/60 dark:bg-emerald-950/20"
+                : "border-blood-400 bg-blood-50/40 dark:border-blood-500/60 dark:bg-blood-950/25"
+              : "cursor-grab border-stone-200/90 active:cursor-grabbing dark:border-[#2e2629]"
+              }`}
           >
             <BrandLogo
               variant="watermark"

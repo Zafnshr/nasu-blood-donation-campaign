@@ -29,6 +29,7 @@ export function SiteHeader() {
     { href: "/learn", label: copy.nav.learn },
     { href: "/donate", label: copy.nav.donate },
     { href: "/card", label: copy.nav.card },
+    { href: "/share", label: copy.nav.share },
   ];
 
   return (
@@ -107,7 +108,7 @@ export function SiteHeader() {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`inline-flex min-h-11 items-center rounded-xl px-2.5 text-sm font-semibold transition-colors ${
+                  className={`inline-flex min-h-11 items-center rounded-xl px-2 text-xs font-semibold transition-colors ${
                     active
                       ? "bg-blood-100/80 text-blood-700 dark:bg-blood-500/20 dark:text-rose-200"
                       : "text-stone-700 hover:text-blood-700 dark:text-stone-300"

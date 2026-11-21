@@ -13,12 +13,10 @@ export function StampBadge({
 }: StampBadgeProps) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full font-semibold transition-colors ${
-        compact
-          ? "px-2.5 py-1 text-xs"
-          : "px-3.5 py-1.5 text-xs sm:text-sm"
-      } ${
-        earned
+      className={`inline-flex items-center gap-1.5 rounded-full font-semibold transition-colors ${compact
+        ? "px-2.5 py-1 text-xs"
+        : "px-3.5 py-1.5 text-xs sm:text-sm"
+        } ${earned
           ? "bg-gradient-to-br from-blood-600 to-blood-700 text-white shadow-xs"
           : "border border-dashed border-stone-300 bg-[#f6f3ef] text-stone-600 dark:border-stone-700 dark:bg-[#161214] dark:text-stone-300"
         }`}

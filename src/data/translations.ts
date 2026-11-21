@@ -9,6 +9,7 @@ export const UI_COPY: Record<
       learn: string;
       donate: string;
       card: string;
+      share: string;
       switchToOtherLang: string;
       switchLangAria: string;
       toDarkAria: string;
@@ -223,6 +224,28 @@ export const UI_COPY: Record<
       shareCardTitle: string;
       shareCardText: string;
     };
+    share: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      scanHint: string;
+      fullscreenBtn: string;
+      fullscreenHint: string;
+      closeModal: string;
+      shareNative: string;
+      whatsapp: string;
+      copyLink: string;
+      copied: string;
+      saveQr: string;
+      savingQr: string;
+      savedToast: string;
+      sharedToast: string;
+      shareErr: string;
+      shareTitle: string;
+      shareMessage: string;
+      footerShareLink: string;
+      steps: { title: string; body: string }[];
+    };
   }
 > = {
   ar: {
@@ -232,6 +255,7 @@ export const UI_COPY: Record<
       learn: "تعلّم",
       donate: "تبرّع",
       card: "البطاقة",
+      share: "شارك",
       switchToOtherLang: "EN",
       switchLangAria: "Switch language to English",
       toDarkAria: "تفعيل الوضع الداكن",
@@ -502,6 +526,43 @@ export const UI_COPY: Record<
       shareCardTitle: "بطاقة المتبرع الخاصة بي — NASU",
       shareCardText: "أنشأت للتو بطاقتي التفاعلية في حملة NASU للتبرع بالدم 🩸",
     },
+    share: {
+      eyebrow: "شارك الأثر",
+      title: "شارك الموقع مع صديقك",
+      subtitle:
+        "خلّي صاحبك يمسح الكود مباشرة من شاشتك، أو ابعتله الرابط في ثانية — كل مشاركة ممكن تنقذ ٣ أرواح.",
+      scanHint: "امسح الكود لفتح الحملة",
+      fullscreenBtn: "تكبير للمسح",
+      fullscreenHint: "وجّه كاميرا هاتف صديقك نحو الكود",
+      closeModal: "إغلاق",
+      shareNative: "شارك الآن",
+      whatsapp: "واتساب",
+      copyLink: "نسخ الرابط",
+      copied: "تم النسخ!",
+      saveQr: "حفظ بطاقة الكود",
+      savingQr: "جارٍ الحفظ...",
+      savedToast: "تم حفظ بطاقة الكود بنجاح.",
+      sharedToast: "تمت المشاركة! شكراً لنشر الأثر.",
+      shareErr: "تعذر إتمام العملية الآن. جرّب نسخ الرابط.",
+      shareTitle: "حملة NASU للتبرع بالدم",
+      shareMessage:
+        "تبرّع واحد ممكن ينقذ ٣ أرواح 🩸 جرّب تحدي الدقيقتين واصنع بطاقة المتبرع الخاصة بك في حملة جامعة عين شمس الأهلية:",
+      footerShareLink: "شارك الموقع عبر QR",
+      steps: [
+        {
+          title: "اعرض الكود",
+          body: "افتح شاشة المسح المكبّرة أمام صديقك.",
+        },
+        {
+          title: "مسح فوري",
+          body: "يفتح الموقع مباشرة من كاميرا الهاتف بدون تطبيقات.",
+        },
+        {
+          title: "ضاعف الأثر",
+          body: "كل صديق ينضم قد يساهم في إنقاذ حتى ٣ أرواح.",
+        },
+      ],
+    },
   },
   en: {
     nav: {
@@ -510,6 +571,7 @@ export const UI_COPY: Record<
       learn: "Learn",
       donate: "Donate",
       card: "Card",
+      share: "Share",
       switchToOtherLang: "عربي",
       switchLangAria: "التبديل إلى اللغة العربية",
       toDarkAria: "Switch to dark mode",
@@ -784,6 +846,43 @@ export const UI_COPY: Record<
       shareCardTitle: "My NASU Donor Card",
       shareCardText:
         "I just made my donor card at the NASU Blood Donation Campaign 🩸",
+    },
+    share: {
+      eyebrow: "Pass the drop",
+      title: "Share in one scan",
+      subtitle:
+        "Let a friend scan straight from your screen, or send the link in a tap — one share can spark up to 3 lives saved.",
+      scanHint: "Scan to open campaign",
+      fullscreenBtn: "Full-screen QR",
+      fullscreenHint: "Point your friend's camera at the code",
+      closeModal: "Close",
+      shareNative: "Share now",
+      whatsapp: "WhatsApp",
+      copyLink: "Copy link",
+      copied: "Copied!",
+      saveQr: "Save QR card",
+      savingQr: "Saving...",
+      savedToast: "QR card image saved.",
+      sharedToast: "Shared! Thanks for spreading the drop.",
+      shareErr: "Could not complete right now. Try copying the link.",
+      shareTitle: "NASU Blood Donation Campaign",
+      shareMessage:
+        "One donation can save up to 3 lives 🩸 Try the 2-min challenge and make your NASU donor card:",
+      footerShareLink: "Share via QR",
+      steps: [
+        {
+          title: "Show the code",
+          body: "Open full-screen QR mode right on your screen.",
+        },
+        {
+          title: "Instant scan",
+          body: "Opens straight from any phone camera — no app needed.",
+        },
+        {
+          title: "Multiply impact",
+          body: "Every friend who joins can help save up to 3 lives.",
+        },
+      ],
     },
   },
 };
