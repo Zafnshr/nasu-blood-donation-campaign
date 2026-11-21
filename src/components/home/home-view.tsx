@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Heart } from "lucide-react";
 import { CAMPAIGN_INFO_BY_LOCALE } from "@/data/campaign";
 import { UI_COPY } from "@/data/translations";
 import { usePreferences } from "@/lib/use-preferences";
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { Button } from "@/components/ui/button";
 import { HeroDrop } from "@/components/home/hero-drop";
 import { ImpactMarquee } from "@/components/home/impact-marquee";
@@ -27,6 +27,10 @@ export function HomeView() {
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -bottom-24 -start-16 h-56 w-56 rounded-full bg-amber-100/45 blur-3xl dark:bg-amber-600/8"
+        />
+        <BrandLogo
+          variant="watermark"
+          className="pointer-events-none absolute -bottom-16 -start-12 h-64 w-64 text-blood-700 opacity-[0.04] dark:text-rose-200 dark:opacity-[0.05]"
         />
 
         <div className="relative grid items-center gap-8 md:grid-cols-[1.2fr_0.8fr] lg:grid-cols-[1.15fr_0.85fr]">
@@ -65,12 +69,10 @@ export function HomeView() {
       <section className="pt-4">
         <div className="flex flex-col items-center justify-between gap-4 rounded-3xl bg-gradient-to-br from-blood-600 to-blood-800 px-6 py-6 text-center text-white shadow-lg shadow-blood-700/15 sm:flex-row sm:text-start">
           <div className="flex items-center gap-3.5">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/15">
-              <Heart
-                aria-hidden="true"
-                className="animate-heartbeat h-5 w-5 fill-white text-white"
-              />
-            </span>
+            <BrandLogo
+              variant="light"
+              className="h-12 w-12 shrink-0 drop-shadow-xs"
+            />
             <p className="text-base font-semibold leading-relaxed sm:text-lg">
               {info.closingLine}
             </p>

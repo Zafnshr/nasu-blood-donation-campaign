@@ -10,7 +10,8 @@ import {
   useTransform,
   type PanInfo,
 } from "framer-motion";
-import { CheckCircle2, RotateCcw, Sparkles, XCircle } from "lucide-react";
+import { CheckCircle2, RotateCcw, XCircle } from "lucide-react";
+import { CAMPAIGN_INFO_BY_LOCALE } from "@/data/campaign";
 import { getMyths } from "@/data/myths";
 import { UI_COPY } from "@/data/translations";
 import { shuffle } from "@/lib/blood";
@@ -18,6 +19,7 @@ import { updateProgress } from "@/lib/progress-store";
 import { usePreferences } from "@/lib/use-preferences";
 import { useProgress } from "@/lib/use-progress";
 import type { MythItem } from "@/types";
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
@@ -30,6 +32,7 @@ export function MythGame() {
   const progress = useProgress();
   const { locale } = usePreferences();
   const copy = UI_COPY[locale].play;
+  const info = CAMPAIGN_INFO_BY_LOCALE[locale];
   const localizedDeckSource = getMyths(locale);
   const reduced = useReducedMotion();
 
@@ -129,8 +132,8 @@ export function MythGame() {
   if (phase === "intro") {
     return (
       <Card className="mx-auto max-w-xl text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blood-50 text-blood-600 dark:bg-blood-950/70 dark:text-rose-300">
-          <Sparkles aria-hidden="true" className="h-7 w-7" />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-blood-50/90 ring-1 ring-blood-200/70 dark:bg-blood-950/60 dark:ring-blood-500/25">
+          <BrandLogo className="h-14 w-14" />
         </div>
         <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl dark:text-[#f5f2f0]">
           {copy.title}
@@ -162,6 +165,10 @@ export function MythGame() {
       <>
         <Confetti active={score >= 7} />
         <Card className="mx-auto max-w-xl text-center">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-stone-200/80 bg-[#f6f3ef] px-3 py-1 text-xs font-bold text-ink dark:border-[#2e2629] dark:bg-[#141112] dark:text-[#f5f2f0]">
+            <BrandLogo className="h-6 w-6 shrink-0" />
+            <span>{info.brand}</span>
+          </div>
           <div className="relative mx-auto flex h-32 w-32 items-center justify-center">
             <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
               <circle
@@ -299,7 +306,7 @@ export function MythGame() {
               reduced ? { opacity: 0 } : { opacity: 0, y: -12, scale: 0.96 }
             }
             transition={{ type: "spring", stiffness: 340, damping: 28 }}
-            className={`relative select-none rounded-3xl border bg-white p-6 shadow-[0_12px_34px_rgba(28,25,23,0.08)] sm:p-8 dark:bg-[#1c181a] dark:shadow-[0_14px_38px_rgba(0,0,0,0.45)] ${
+            className={`relative select-none overflow-hidden rounded-3xl border bg-white p-6 shadow-[0_12px_34px_rgba(28,25,23,0.08)] sm:p-8 dark:bg-[#1c181a] dark:shadow-[0_14px_38px_rgba(0,0,0,0.45)] ${
               isAnswered
                 ? isCorrect
                   ? "border-emerald-400 bg-emerald-50/40 dark:border-emerald-500/60 dark:bg-emerald-950/20"
@@ -307,6 +314,10 @@ export function MythGame() {
                 : "cursor-grab border-stone-200/90 active:cursor-grabbing dark:border-[#2e2629]"
             }`}
           >
+            <BrandLogo
+              variant="watermark"
+              className="pointer-events-none absolute -bottom-8 -end-6 h-36 w-36 text-blood-700 opacity-[0.035] dark:text-rose-200 dark:opacity-[0.05]"
+            />
             {!isAnswered && (
               <>
                 <motion.div
@@ -360,11 +371,10 @@ export function MythGame() {
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full px-3 py-0.5 text-xs font-bold sm:text-sm ${
-                        isCorrect
-                          ? "bg-emerald-600 text-white"
-                          : "bg-blood-600 text-white"
-                      }`}
+                      className={`inline-flex items-center gap-1 rounded-full px-3 py-0.5 text-xs font-bold sm:text-sm ${isCorrect
+                        ? "bg-emerald-600 text-white"
+                        : "bg-blood-600 text-white"
+                        }`}
                     >
                       {isCorrect ? copy.correct : copy.notQuite}
                     </span>

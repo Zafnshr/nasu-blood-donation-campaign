@@ -5,6 +5,7 @@ export const CAMPAIGN_INFO_BY_LOCALE: Record<
   {
     brand: string;
     fullTitle: string;
+    university: string;
     closingLine: string;
     closingCtaBtn: string;
     disclaimer: string;
@@ -16,6 +17,7 @@ export const CAMPAIGN_INFO_BY_LOCALE: Record<
   ar: {
     brand: "حملة NASU للتبرع",
     fullTitle: "حملة NASU للتبرع بالدم",
+    university: "جامعة عين شمس الأهلية",
     closingLine: "جاهز للتبرع؟ ابحث عن فريق حملة NASU في نقطة التبرع.",
     closingCtaBtn: "افحص أهليتك",
     disclaimer:
@@ -27,6 +29,7 @@ export const CAMPAIGN_INFO_BY_LOCALE: Record<
   en: {
     brand: "NASU Blood Drive",
     fullTitle: "NASU Blood Donation Campaign",
+    university: "Ain Shams National University",
     closingLine:
       "Ready to give? Find the NASU campaign team at the donation booth.",
     closingCtaBtn: "Check eligibility",

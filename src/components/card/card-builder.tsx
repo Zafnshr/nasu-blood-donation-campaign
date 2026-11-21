@@ -11,11 +11,16 @@ import { updateProgress } from "@/lib/progress-store";
 import { usePreferences } from "@/lib/use-preferences";
 import { useOrigin, useProgress } from "@/lib/use-progress";
 import type { CardTheme, DonorBloodSelection, DonorCardData } from "@/types";
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Confetti } from "@/components/ui/confetti";
 import { StampBadge } from "@/components/ui/stamp-badge";
-import { CardFrontFace, DonorCard } from "@/components/card/donor-card";
+import {
+  CARD_AURA_CLASSES,
+  CardFrontFace,
+  DonorCard,
+} from "@/components/card/donor-card";
 
 const ID_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -187,18 +192,43 @@ export function CardBuilder() {
 
   const activeTheme: CardTheme = savedCard?.theme ?? "crimson";
 
+  const previewCard: DonorCardData = {
+    name: nameInput.trim() || (locale === "ar" ? "اسمك هنا" : "Your Name"),
+    bloodType: bloodInput,
+    donatedToday: donatedInput,
+    theme: themeInput,
+    id: savedCard?.id ?? "NASU-2026",
+    createdAt: savedCard?.createdAt ?? "2026-11-21T12:00:00.000Z",
+  };
+
   return (
     <div className="space-y-6">
       <Confetti active={justCreated && !showForm} />
 
       {showForm ? (
-        <Card className="mx-auto max-w-xl">
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl dark:text-[#f5f2f0]">
-            {savedCard ? copy.editTitle : copy.createTitle}
-          </h1>
-          <p className="mt-1.5 text-base text-stone-700 dark:text-stone-300">
-            {copy.formSub}
-          </p>
+        <div className="grid items-start gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="lg:sticky lg:top-24">
+            <div className="relative mx-auto aspect-[420/265] w-full max-w-[420px]">
+              <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute -inset-3 -z-10 rounded-[32px] bg-gradient-to-br opacity-75 blur-2xl transition-all duration-500 ${CARD_AURA_CLASSES[themeInput]}`}
+              />
+              <CardFrontFace card={previewCard} />
+            </div>
+          </div>
+
+          <Card className="mx-auto w-full max-w-xl lg:max-w-none">
+            <div className="flex items-center gap-3.5">
+              <BrandLogo className="h-12 w-12 shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl dark:text-[#f5f2f0]">
+                  {savedCard ? copy.editTitle : copy.createTitle}
+                </h1>
+                <p className="mt-1 text-sm text-stone-700 sm:text-base dark:text-stone-300">
+                  {copy.formSub}
+                </p>
+              </div>
+            </div>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-6" noValidate>
             <div>
@@ -356,10 +386,11 @@ export function CardBuilder() {
                 </Button>
               )}
             </div>
-          </form>
-        </Card>
+            </form>
+          </Card>
+        </div>
       ) : (
-        <div className="grid items-start gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="grid items-start gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-5">
             <div className="text-center lg:text-start">
               <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl dark:text-[#f5f2f0]">

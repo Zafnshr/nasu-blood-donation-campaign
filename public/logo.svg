@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="nasu-v2-drop-grad" x1="28" y1="14" x2="100" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f43f5e" />
+      <stop offset="52%" stop-color="#c41e3a" />
+      <stop offset="100%" stop-color="#871227" />
+    </linearGradient>
+  </defs>
+  <g fill="#16335b">
+    <path d="M 21 51 C 9 70 12 97 29 113 C 40 122.5 52 125.5 64 125 C 52 122.5 41.5 117.5 34 109.5 C 20 95.5 18.5 72.5 21 51 Z" />
+    <path d="M 85 27 C 103 40 114.5 59 113 83 C 109.5 63 100 46 85 27 Z" />
+  </g>
+  <path
+    d="M 64 10 C 51 29 26 53 26 80 A 38 38 0 1 0 102 80 C 102 53 77 29 64 10 Z"
+    fill="url(#nasu-v2-drop-grad)"
+  />
+  <path
+    d="M 64 10 C 77 29 102 53 102 80 A 38 38 0 0 1 64 118 Z"
+    fill="#ffffff"
+    opacity="0.09"
+  />
+  <path
+    d="M 36 81 C 36 93 43.5 103 54 107.5"
+    stroke="#ffe4e8"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    opacity="0.35"
+  />
+  <g fill="#ffffff">
+    <path d="M 64 28 L 56.5 42 L 54.9 56 Q 63.5 50.5 72.0 46 L 71.5 42 Z" />
+    <path d="M 54.4 61 L 53.4 69.5 Q 63.5 62.5 73.5 59.5 L 72.6 51.5 Q 63.5 55.5 54.4 61 Z" />
+    <path d="M 52.8 75 L 51.4 87 Q 63 72.5 76.0 82 L 74.2 65.5 Q 63 66.5 52.8 75 Z" />
+    <path d="M 50.7 93.5 L 49.5 104 L 78.5 104 L 76.7 88 Q 63.5 79.5 50.7 93.5 Z" />
+  </g>
+</svg>

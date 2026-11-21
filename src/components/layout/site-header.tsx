@@ -8,6 +8,7 @@ import { CAMPAIGN_INFO_BY_LOCALE } from "@/data/campaign";
 import { UI_COPY } from "@/data/translations";
 import { toggleLocale, toggleTheme } from "@/lib/preferences-store";
 import { usePreferences } from "@/lib/use-preferences";
+import { BrandLogo } from "@/components/ui/brand-logo";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -32,24 +33,24 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-stone-200/80 bg-cream/90 backdrop-blur-md transition-colors duration-200 dark:border-[#2e2629] dark:bg-[#121011]/90">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-2 px-4 sm:h-[68px] sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="inline-flex min-h-11 min-w-0 items-center gap-2.5 rounded-xl font-bold tracking-tight text-ink transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 focus-visible:ring-offset-2 dark:text-[#f5f2f0] dark:focus-visible:ring-offset-[#121011]"
+          className="group inline-flex min-h-11 min-w-0 items-center gap-2.5 rounded-xl font-bold tracking-tight text-ink transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 focus-visible:ring-offset-2 dark:text-[#f5f2f0] dark:focus-visible:ring-offset-[#121011]"
         >
+          <BrandLogo className="h-11 w-11 shrink-0 transition-transform duration-200 group-hover:scale-105 sm:h-12 sm:w-12" />
           <span
             aria-hidden="true"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blood-600 to-blood-700 shadow-sm shadow-blood-600/20"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              className="h-4.5 w-4.5 text-white"
-              fill="currentColor"
-            >
-              <path d="M12 2.5C12 2.5 5 10.4 5 15.2a7 7 0 0 0 14 0C19 10.4 12 2.5 12 2.5Z" />
-            </svg>
-          </span>
-          <span className="truncate text-sm sm:text-base">{info.brand}</span>
+            className="h-7 w-[1.5px] shrink-0 bg-stone-300/90 dark:bg-[#3a2f33]"
+          />
+          <div className="min-w-0 text-start">
+            <span className="block truncate text-base font-extrabold leading-tight sm:text-lg">
+              {info.brand}
+            </span>
+            <span className="hidden truncate text-[11px] font-semibold leading-tight text-stone-500 lg:block dark:text-stone-400">
+              {info.university}
+            </span>
+          </div>
         </Link>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">

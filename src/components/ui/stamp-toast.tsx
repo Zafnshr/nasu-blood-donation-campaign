@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Award } from "lucide-react";
 import { getStampsMeta } from "@/data/campaign";
 import { UI_COPY } from "@/data/translations";
 import { subscribeStampUnlock } from "@/lib/progress-store";
 import { usePreferences } from "@/lib/use-preferences";
 import type { StampKey } from "@/types";
+import { BrandLogo } from "@/components/ui/brand-logo";
 
 export function StampToast() {
   const [unlockedKey, setUnlockedKey] = useState<StampKey | null>(null);
@@ -52,9 +52,7 @@ export function StampToast() {
             transition={{ type: "spring", stiffness: 380, damping: 28 }}
             className="flex items-center gap-2.5 rounded-full border border-blood-500/40 bg-blood-950/95 px-4 py-2 text-white shadow-[0_14px_34px_rgba(76,5,25,0.28)] backdrop-blur-md dark:border-rose-400/35 dark:bg-[#221017]/95"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blood-500 to-blood-700 text-white shadow-xs">
-              <Award aria-hidden="true" className="h-4 w-4" />
-            </span>
+            <BrandLogo variant="light" className="h-8 w-8 shrink-0" />
             <div className="pe-1 text-start">
               <p className="text-[10px] font-bold tracking-wider text-rose-200 uppercase">
                 {copy.toast.stampUnlocked}

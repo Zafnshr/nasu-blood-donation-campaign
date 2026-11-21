@@ -2,6 +2,7 @@
 
 import { CAMPAIGN_INFO_BY_LOCALE } from "@/data/campaign";
 import { usePreferences } from "@/lib/use-preferences";
+import { BrandLockup } from "@/components/ui/brand-logo";
 
 export function Footer() {
   const { locale } = usePreferences();
@@ -9,7 +10,17 @@ export function Footer() {
 
   return (
     <footer className="mx-auto max-w-5xl px-4 pb-28 pt-6 text-center sm:px-6 sm:pb-12 lg:px-8">
-      <div className="border-t border-stone-200/80 pt-6 dark:border-[#2e2629]">
+      <div className="border-t border-stone-200/80 pt-7 dark:border-[#2e2629]">
+        <div className="mb-4 flex justify-center">
+          <BrandLockup
+            title={info.fullTitle}
+            subtitle={info.university}
+            logoClassName="h-11 w-11 shrink-0"
+            dividerClassName="h-7 w-[1.5px] shrink-0 bg-stone-300/90 dark:bg-[#3a2f33]"
+            titleClassName="text-sm font-extrabold text-ink sm:text-base dark:text-[#f5f2f0]"
+            subtitleClassName="text-xs font-semibold text-stone-500 dark:text-stone-400"
+          />
+        </div>
         <p className="text-sm font-medium text-stone-800 dark:text-stone-200">
           {info.footerMadeWith} <span aria-hidden="true">❤</span>
           <span className="sr-only">{info.footerLoveWord}</span>{" "}

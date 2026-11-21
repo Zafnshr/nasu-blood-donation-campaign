@@ -12,6 +12,7 @@ import {
 import { Heart } from "lucide-react";
 import { UI_COPY } from "@/data/translations";
 import { usePreferences } from "@/lib/use-preferences";
+import { BrandLogo } from "@/components/ui/brand-logo";
 
 export function HeroDrop() {
   const { locale } = usePreferences();
@@ -46,12 +47,16 @@ export function HeroDrop() {
   return (
     <div className="flex flex-col items-center justify-center">
       <div
-        className="relative flex h-44 w-44 items-center justify-center sm:h-52 sm:w-52 lg:h-56 lg:w-56"
+        className="relative flex h-52 w-52 items-center justify-center sm:h-60 sm:w-60 lg:h-64 lg:w-64"
         style={{ perspective: "900px" }}
       >
         <div
           aria-hidden="true"
-          className="absolute inset-4 rounded-full bg-blood-200/50 blur-2xl dark:bg-blood-600/25"
+          className="absolute inset-2 rounded-full bg-blood-200/55 blur-3xl dark:bg-blood-600/25"
+        />
+        <div
+          aria-hidden="true"
+          className="animate-pulse-ring pointer-events-none absolute inset-6 rounded-full border border-blood-400/40 dark:border-rose-400/30"
         />
 
         {/* Expanding concentric ripple rings on tap */}
@@ -85,50 +90,7 @@ export function HeroDrop() {
           aria-label={copy.tapDrop}
           className="relative flex h-full w-full cursor-pointer items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#1a1114]"
         >
-          <svg
-            viewBox="0 0 200 220"
-            className="animate-heartbeat h-full w-full drop-shadow-[0_18px_28px_rgba(190,18,60,0.28)]"
-            aria-hidden="true"
-          >
-            <defs>
-              <linearGradient
-                id="hero-drop-grad"
-                x1="40"
-                y1="20"
-                x2="160"
-                y2="200"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop offset="0%" stopColor="#fb7185" />
-                <stop offset="45%" stopColor="#e11d48" />
-                <stop offset="100%" stopColor="#9f1239" />
-              </linearGradient>
-            </defs>
-
-            <path
-              d="M100 14C100 14 34 86.5 34 136a66 66 0 0 0 132 0C166 86.5 100 14 100 14Z"
-              fill="url(#hero-drop-grad)"
-            />
-
-            <path
-              d="M62 128c0 22 14.5 40.5 34 45.5"
-              fill="none"
-              stroke="#ffe4e6"
-              strokeWidth="6"
-              strokeLinecap="round"
-              opacity="0.35"
-            />
-
-            <path
-              d="M42 136 H72 L83 114 L96 158 L110 96 L123 146 L132 136 H158"
-              fill="none"
-              stroke="#ffffff"
-              strokeWidth="5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="animate-ecg"
-            />
-          </svg>
+          <BrandLogo className="animate-heartbeat h-full w-full drop-shadow-[0_20px_32px_rgba(163,22,47,0.32)]" />
         </motion.button>
       </div>
 
