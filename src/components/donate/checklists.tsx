@@ -7,6 +7,7 @@ import {
   BEFORE_CHECKLIST_BY_LOCALE,
 } from "@/data/donate";
 import { UI_COPY } from "@/data/translations";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import { Card } from "@/components/ui/card";
 import { Confetti } from "@/components/ui/confetti";
@@ -104,9 +105,16 @@ export function Checklists() {
           title={copy.afterTitle}
           items={afterItems}
           checked={afterChecked}
-          onToggle={(idx) =>
-            setAfterChecked((prev) => ({ ...prev, [idx]: !prev[idx] }))
-          }
+          onToggle={(idx) => {
+            const next = { ...afterChecked, [idx]: !afterChecked[idx] };
+            if (
+              !allAfterDone &&
+              afterItems.every((_, i) => Boolean(next[i]))
+            ) {
+              trackEvent("checklist_after_complete");
+            }
+            setAfterChecked(next);
+          }}
           footerMessage={allAfterDone ? copy.proAftercare : undefined}
         />
       </div>

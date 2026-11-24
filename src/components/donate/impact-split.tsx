@@ -19,6 +19,7 @@ import {
   type WhoNeedsBloodItem,
 } from "@/data/donate";
 import { UI_COPY } from "@/data/translations";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -59,7 +60,10 @@ export function ImpactSplit() {
               )}
               <button
                 type="button"
-                onClick={() => setSplit(true)}
+                onClick={() => {
+                  setSplit(true);
+                  trackEvent("impact_split_tap");
+                }}
                 className="group relative inline-flex min-h-14 items-center gap-3 rounded-3xl bg-gradient-to-br from-blood-600 to-blood-700 px-6 py-4 text-base font-bold text-white shadow-lg shadow-blood-700/25 transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#1a1114]"
               >
                 <Droplets

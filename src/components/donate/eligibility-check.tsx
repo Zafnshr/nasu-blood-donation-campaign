@@ -11,6 +11,7 @@ import {
 } from "@/data/donate";
 import { UI_COPY } from "@/data/translations";
 import { awardStamp } from "@/lib/progress-store";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import type { EligibilityAnswer } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -35,11 +36,24 @@ export function EligibilityCheck() {
 
   function handleAnswer(answer: EligibilityAnswer) {
     if (!current) return;
+    if (step === 0) {
+      trackEvent("eligibility_start");
+    }
     const nextAnswers = { ...answers, [current.id]: answer };
     setAnswers(nextAnswers);
 
     if (step + 1 >= total) {
+      const flaggedCount = questions.filter((q) => {
+        const ans = nextAnswers[q.id];
+        if (!ans) return false;
+        if (q.allowNa && ans === "na") return false;
+        return ans !== q.passIf;
+      }).length;
       awardStamp("donorReady");
+      trackEvent("eligibility_complete", {
+        all_passed: flaggedCount === 0,
+        flagged_count: flaggedCount,
+      });
       setFinished(true);
       return;
     }

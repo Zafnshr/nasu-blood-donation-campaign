@@ -1,4 +1,5 @@
 import type { Locale, Preferences, ThemeMode } from "@/types";
+import { trackEvent } from "@/lib/track";
 
 const PREFS_KEY = "nasu-blood-prefs-v1";
 
@@ -96,10 +97,12 @@ export function setTheme(theme: ThemeMode): void {
 
 export function toggleTheme(): void {
   const cur = getPreferencesSnapshot();
+  const nextTheme: ThemeMode = cur.theme === "dark" ? "light" : "dark";
   writePreferences({
     ...cur,
-    theme: cur.theme === "dark" ? "light" : "dark",
+    theme: nextTheme,
   });
+  trackEvent("theme_toggle", { to: nextTheme });
 }
 
 export function setLocale(locale: Locale): void {
@@ -110,8 +113,10 @@ export function setLocale(locale: Locale): void {
 
 export function toggleLocale(): void {
   const cur = getPreferencesSnapshot();
+  const nextLocale: Locale = cur.locale === "ar" ? "en" : "ar";
   writePreferences({
     ...cur,
-    locale: cur.locale === "ar" ? "en" : "ar",
+    locale: nextLocale,
   });
+  trackEvent("locale_toggle", { to: nextLocale });
 }

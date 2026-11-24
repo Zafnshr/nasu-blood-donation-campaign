@@ -12,3 +12,6 @@ next-env.d.ts
 
 # Local agent skills (kept on disk only, excluded from repo)
 skills/
+
+# Private maker-only analytics dashboard (kept local with secret)
+dashboard/

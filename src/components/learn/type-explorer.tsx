@@ -17,6 +17,7 @@ import {
   redCellDonors,
   redCellRecipients,
 } from "@/lib/blood";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import type { BloodType } from "@/types";
 import { Card } from "@/components/ui/card";
@@ -205,7 +206,10 @@ export function TypeExplorer() {
               key={type}
               type="button"
               aria-pressed={active}
-              onClick={() => setSelected(type)}
+              onClick={() => {
+                setSelected(type);
+                trackEvent("blood_type_inspect", { blood_type: type });
+              }}
               className={`relative min-h-11 overflow-hidden rounded-2xl border text-sm font-extrabold transition-colors sm:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 ${
                 active
                   ? "border-blood-600 text-white shadow-sm"

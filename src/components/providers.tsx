@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { MotionConfig } from "framer-motion";
+import { AnalyticsTracker } from "@/components/analytics-tracker";
 import { StampToast } from "@/components/ui/stamp-toast";
 import { usePreferences } from "@/lib/use-preferences";
 
@@ -17,6 +18,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <MotionConfig reducedMotion="user">
+      <AnalyticsTracker />
       <StampToast />
       {children}
     </MotionConfig>

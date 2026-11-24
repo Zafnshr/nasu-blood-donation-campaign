@@ -8,6 +8,7 @@ import { getStampsMeta } from "@/data/campaign";
 import { UI_COPY } from "@/data/translations";
 import { BLOOD_TYPES, formatBloodType } from "@/lib/blood";
 import { updateProgress } from "@/lib/progress-store";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import { useOrigin, useProgress } from "@/lib/use-progress";
 import type { CardTheme, DonorBloodSelection, DonorCardData } from "@/types";
@@ -79,10 +80,16 @@ export function CardBuilder() {
 
   function handleThemeSwitch(nextTheme: CardTheme) {
     if (!savedCard) return;
+    trackEvent("card_theme_switch", { theme: nextTheme });
     updateProgress((prev) => ({
       ...prev,
       card: prev.card ? { ...prev.card, theme: nextTheme } : null,
     }));
+  }
+
+  function handleToggleFlip() {
+    trackEvent("card_flip", { to_face: !flipped ? "back" : "front" });
+    setFlipped((prev) => !prev);
   }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -106,6 +113,12 @@ export function CardBuilder() {
       ...prev,
       card: nextCard,
     }));
+    trackEvent("card_create", {
+      blood_type: bloodInput,
+      theme: themeInput,
+      donated_today: donatedInput,
+      is_edit: Boolean(savedCard),
+    });
 
     setNameError("");
     setFeedback("");
@@ -144,6 +157,10 @@ export function CardBuilder() {
     try {
       const dataUrl = await renderCardPng();
       triggerDownload(dataUrl, savedCard.name);
+      trackEvent("card_download_png", {
+        theme: savedCard.theme ?? "crimson",
+        blood_type: savedCard.bloodType,
+      });
       setFeedback(copy.downloadedToast);
     } catch {
       setFeedback(copy.downloadErr);
@@ -174,9 +191,17 @@ export function CardBuilder() {
           title: copy.shareCardTitle,
           text: copy.shareCardText,
         });
+        trackEvent("card_share", {
+          method: "native",
+          theme: savedCard.theme ?? "crimson",
+        });
         setFeedback(copy.sharedToast);
       } else {
         triggerDownload(dataUrl, savedCard.name);
+        trackEvent("card_share", {
+          method: "fallback_download",
+          theme: savedCard.theme ?? "crimson",
+        });
         setFeedback(copy.shareFallbackToast);
       }
     } catch (err) {
@@ -406,7 +431,7 @@ export function CardBuilder() {
               stamps={progress.stamps}
               origin={origin}
               flipped={flipped}
-              onToggleFlip={() => setFlipped((prev) => !prev)}
+              onToggleFlip={handleToggleFlip}
             />
 
             {/* Offscreen flat copy for clean html-to-image PNG export */}
@@ -462,7 +487,7 @@ export function CardBuilder() {
                 {copy.share}
               </Button>
               <Button
-                onClick={() => setFlipped((prev) => !prev)}
+                onClick={handleToggleFlip}
                 variant="secondary"
                 size="sm"
               >

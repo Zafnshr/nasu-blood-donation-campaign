@@ -11,6 +11,7 @@ import {
 } from "framer-motion";
 import { Heart } from "lucide-react";
 import { UI_COPY } from "@/data/translations";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import { BrandLogo } from "@/components/ui/brand-logo";
 
@@ -76,7 +77,12 @@ export function HeroDrop() {
 
         <motion.button
           type="button"
-          onClick={() => setPulseCount((c) => c + 1)}
+          onClick={() => {
+            if (pulseCount === 0) {
+              trackEvent("hero_drop_tap", { pulse_count: 1 });
+            }
+            setPulseCount((c) => c + 1);
+          }}
           onPointerMove={handlePointerMove}
           onPointerLeave={handlePointerLeave}
           whileTap={reduced ? undefined : { scale: 0.92 }}

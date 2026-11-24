@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { CAMPAIGN_INFO_BY_LOCALE } from "@/data/campaign";
 import { UI_COPY } from "@/data/translations";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import { useOrigin } from "@/lib/use-progress";
 import { BrandLogo } from "@/components/ui/brand-logo";
@@ -181,11 +182,17 @@ export function ShareCampaignSection() {
     : copy.shareMessage;
   const whatsappHref = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
 
+  function openSpotlight() {
+    setSpotlightOpen(true);
+    trackEvent("qr_fullscreen_open");
+  }
+
   async function handleCopy() {
     if (!shareUrl) return;
     setFeedbackKey(null);
     try {
       await navigator.clipboard.writeText(shareUrl);
+      trackEvent("share_copy_link");
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2200);
     } catch {
@@ -203,6 +210,7 @@ export function ShareCampaignSection() {
           text: copy.shareMessage,
           url: shareUrl,
         });
+        trackEvent("share_native");
         setFeedbackKey("shared");
       } else {
         await handleCopy();
@@ -228,6 +236,7 @@ export function ShareCampaignSection() {
       link.download = "nasu-campaign-qr.png";
       link.href = dataUrl;
       link.click();
+      trackEvent("qr_card_download");
       setFeedbackKey("saved");
     } catch {
       setFeedbackKey("err");
@@ -290,6 +299,7 @@ export function ShareCampaignSection() {
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent("share_whatsapp")}
                   className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl border border-stone-200 bg-white px-3.5 text-xs font-bold text-ink shadow-2xs transition-colors hover:border-blood-300 hover:bg-blood-50/70 active:scale-[0.98] sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 dark:border-[#2e2629] dark:bg-[#141112] dark:text-[#f5f2f0] dark:hover:bg-blood-950/60"
                 >
                   <MessageCircle
@@ -347,7 +357,7 @@ export function ShareCampaignSection() {
               />
               <button
                 type="button"
-                onClick={() => setSpotlightOpen(true)}
+                onClick={openSpotlight}
                 aria-label={copy.fullscreenBtn}
                 className="block w-full cursor-pointer rounded-[28px] text-start transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 focus-visible:ring-offset-4 dark:focus-visible:ring-offset-[#1c181a]"
               >
@@ -357,7 +367,7 @@ export function ShareCampaignSection() {
 
             <button
               type="button"
-              onClick={() => setSpotlightOpen(true)}
+              onClick={openSpotlight}
               className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-stone-200/90 bg-[#f6f3ef] px-4 text-xs font-bold text-ink transition-colors hover:border-blood-300 hover:bg-blood-50/80 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 dark:border-[#2e2629] dark:bg-[#141112] dark:text-stone-200 dark:hover:bg-blood-950/60"
             >
               <Maximize2 aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />

@@ -12,6 +12,7 @@ import {
   shuffle,
 } from "@/lib/blood";
 import { awardStamp } from "@/lib/progress-store";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import type { BloodType } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ export function MatchGame() {
   const current = rounds[index];
 
   function startGame() {
+    trackEvent("match_game_start", { is_replay: phase === "finished" });
     setRounds(generateRounds());
     setIndex(0);
     setScore(0);
@@ -78,6 +80,7 @@ export function MatchGame() {
   function nextRound() {
     if (index + 1 >= rounds.length) {
       awardStamp("typeExpert");
+      trackEvent("match_game_complete", { score, total: rounds.length });
       setPhase("finished");
       return;
     }

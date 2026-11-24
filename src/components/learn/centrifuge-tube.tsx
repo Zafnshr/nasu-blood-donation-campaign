@@ -10,6 +10,7 @@ import {
 } from "@/data/blood-basics";
 import { UI_COPY } from "@/data/translations";
 import { awardStamp } from "@/lib/progress-store";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -30,6 +31,7 @@ export function CentrifugeTube() {
 
   function handleSpin() {
     if (spinning) return;
+    trackEvent("centrifuge_spin", { first_spin: !spun });
     setSpinning(true);
     window.setTimeout(() => {
       setSpinning(false);

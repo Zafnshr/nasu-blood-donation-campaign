@@ -16,6 +16,7 @@ import { getMyths } from "@/data/myths";
 import { UI_COPY } from "@/data/translations";
 import { shuffle } from "@/lib/blood";
 import { updateProgress } from "@/lib/progress-store";
+import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import { useProgress } from "@/lib/use-progress";
 import type { MythItem } from "@/types";
@@ -63,6 +64,7 @@ export function MythGame() {
   const nextTwo = deck[index + 2];
 
   function startRound() {
+    trackEvent("quiz_start", { is_replay: phase === "finished" });
     const pickedIds = shuffle(localizedDeckSource)
       .slice(0, 10)
       .map((item) => item.id);
@@ -115,6 +117,7 @@ export function MythGame() {
             ? finalScore
             : Math.max(prev.bestScore, finalScore),
       }));
+      trackEvent("quiz_complete", { score: finalScore, total: deck.length });
       setPhase("finished");
       return;
     }
