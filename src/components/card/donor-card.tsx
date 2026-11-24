@@ -86,7 +86,7 @@ const THEME_STYLES: Record<CardTheme, CardThemeStyle> = {
       "bg-white/[0.14] border border-white/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]",
     medallionText: "text-white",
     heroBadge:
-      "bg-gradient-to-r from-[#fef3c7] via-[#fde68a] to-[#fcd34d] text-[#5c2c06] ring-1 ring-white/50 shadow-xs",
+      "bg-gradient-to-r from-[#fef3c7] via-[#fde68a] to-[#fcd34d] text-[#5c2c06] border border-[#fef3c7]/80",
     backBg: "linear-gradient(145deg, #210910 0%, #3a0d1b 55%, #260a13 100%)",
     backShadow:
       "0 24px 54px -12px rgba(88, 7, 27, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.16)",
@@ -122,7 +122,7 @@ const THEME_STYLES: Record<CardTheme, CardThemeStyle> = {
       "bg-rose-500/[0.14] border border-rose-300/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]",
     medallionText: "text-white",
     heroBadge:
-      "bg-gradient-to-r from-rose-200 via-rose-100 to-amber-100 text-[#4c0519] ring-1 ring-white/40 shadow-xs",
+      "bg-gradient-to-r from-rose-200 via-rose-100 to-amber-100 text-[#4c0519] border border-white/50",
     backBg: "linear-gradient(145deg, #0d0b0e 0%, #190e14 60%, #100b0e 100%)",
     backShadow:
       "0 24px 54px -12px rgba(10, 6, 9, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.14)",
@@ -158,7 +158,7 @@ const THEME_STYLES: Record<CardTheme, CardThemeStyle> = {
       "bg-blood-600/[0.07] border border-blood-600/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]",
     medallionText: "text-blood-600",
     heroBadge:
-      "bg-gradient-to-r from-blood-700 via-blood-600 to-blood-500 text-white shadow-xs",
+      "bg-gradient-to-r from-blood-700 via-blood-600 to-blood-500 text-white",
     backBg: "linear-gradient(145deg, #ffffff 0%, #fdf8f7 60%, #fbecef 100%)",
     backShadow:
       "0 22px 48px -12px rgba(196, 30, 58, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.95)",
@@ -268,7 +268,7 @@ export function CardFrontFace({
           <div className="flex min-w-0 items-center gap-2.5">
             <BrandLogo
               variant={themeKey === "pearl" ? "crimson" : "light"}
-              className="h-11 w-11 shrink-0 drop-shadow-xs"
+              className="h-11 w-11 shrink-0"
             />
             <span
               aria-hidden="true"
@@ -373,6 +373,236 @@ export function CardFrontFace({
   );
 }
 
+export function CardBackFace({
+  card,
+  stamps,
+  origin,
+  exportRef,
+  fixedExport = false,
+  className = "",
+  style,
+}: {
+  card: DonorCardData;
+  stamps: Progress["stamps"];
+  origin: string;
+  exportRef?: RefObject<HTMLDivElement | null>;
+  fixedExport?: boolean;
+  className?: string;
+  style?: CSSProperties;
+}) {
+  const { locale } = usePreferences();
+  const copy = UI_COPY[locale].card;
+  const info = CAMPAIGN_INFO_BY_LOCALE[locale];
+  const stampsMeta = getStampsMeta(locale);
+  const unknownSubtitle = BLOOD_TYPE_TITLES_BY_LOCALE[locale].unknown.subtitle;
+
+  const themeKey: CardTheme = card.theme ?? "crimson";
+  const theme = THEME_STYLES[themeKey];
+
+  const isKnown = card.bloodType !== "unknown";
+  const giveTo = isKnown
+    ? redCellRecipients(
+        card.bloodType as Exclude<typeof card.bloodType, "unknown">
+      )
+    : [];
+  const receiveFrom = isKnown
+    ? redCellDonors(
+        card.bloodType as Exclude<typeof card.bloodType, "unknown">
+      )
+    : [];
+  const earnedCount = stampsMeta.filter((s) => stamps[s.key]).length;
+
+  return (
+    <div
+      ref={exportRef}
+      style={{
+        background: theme.backBg,
+        boxShadow: theme.backShadow,
+        border: theme.backBorder,
+        ...style,
+      }}
+      className={`relative flex flex-col justify-between overflow-hidden rounded-[24px] ${
+        fixedExport
+          ? "h-[265px] w-[420px] p-4"
+          : "h-full w-full p-3 sm:p-4"
+      } ${theme.backText} ${className}`}
+    >
+      {/* Top 3px metallic accent bar */}
+      <div
+        aria-hidden="true"
+        style={{ background: theme.backTopBar }}
+        className="pointer-events-none absolute inset-x-0 top-0 h-[3px]"
+      />
+
+      {/* Subtle matching guilloché contour waves */}
+      <svg
+        viewBox="0 0 420 265"
+        fill="none"
+        aria-hidden="true"
+        opacity="0.55"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+      >
+        {GUILLOCHE_PATHS.map((d, idx) => (
+          <path
+            key={idx}
+            d={d}
+            stroke={theme.waveStroke}
+            strokeWidth="1.1"
+            strokeLinecap="round"
+          />
+        ))}
+      </svg>
+
+      <BrandLogo
+        variant="watermark"
+        className={`pointer-events-none absolute -bottom-12 -end-8 h-44 w-44 ${theme.backWatermarkClass}`}
+      />
+
+      {/* Zone 1: Slim official top pass header */}
+      <div
+        className={`relative flex items-center justify-between gap-2 border-b pb-1.5 sm:pb-2 ${theme.backDivider}`}
+      >
+        <div className="flex min-w-0 items-center gap-2">
+          <BrandLogo
+            variant={themeKey === "pearl" ? "crimson" : "light"}
+            className="h-6 w-6 shrink-0 sm:h-7 sm:w-7"
+          />
+          <span
+            aria-hidden="true"
+            className={`h-4 w-px shrink-0 ${
+              themeKey === "pearl" ? "bg-blood-200" : "bg-white/25"
+            }`}
+          />
+          <span className="truncate text-[11px] font-extrabold tracking-wide opacity-95">
+            {info.brand}
+          </span>
+        </div>
+        <span
+          dir="ltr"
+          className={`shrink-0 rounded-full px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider ${theme.backIdPill}`}
+        >
+          {card.id}
+        </span>
+      </div>
+
+      {/* Zone 2: Symmetrical center pass body */}
+      <div className="relative flex items-center justify-between gap-2 sm:gap-3">
+        <div
+          className={`min-w-0 flex-1 rounded-2xl border p-1.5 sm:p-2.5 ${theme.backPanel}`}
+        >
+          {isKnown ? (
+            <div className="space-y-1 sm:space-y-1.5">
+              <div>
+                <p
+                  className={`text-[10px] font-bold tracking-wide uppercase ${theme.backLabelText}`}
+                >
+                  {copy.canGiveTo}
+                </p>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {giveTo.map((t) => (
+                    <span
+                      key={t}
+                      dir="ltr"
+                      className={`inline-block rounded-md px-1.5 py-0.5 text-[9.5px] font-bold leading-none sm:text-[10px] ${theme.backGivePill}`}
+                    >
+                      {formatBloodType(t)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className={`border-t pt-1 sm:pt-1.5 ${theme.backDivider}`}>
+                <p
+                  className={`text-[10px] font-bold tracking-wide uppercase ${theme.backLabelText}`}
+                >
+                  {copy.canReceiveFrom}
+                </p>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {receiveFrom.map((t) => (
+                    <span
+                      key={t}
+                      dir="ltr"
+                      className={`inline-block rounded-md px-1.5 py-0.5 text-[9.5px] font-bold leading-none sm:text-[10px] ${theme.backReceivePill}`}
+                    >
+                      {formatBloodType(t)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p
+                className={`text-[10px] font-bold tracking-wide uppercase ${theme.backLabelText}`}
+              >
+                {BLOOD_TYPE_TITLES_BY_LOCALE[locale].unknown.title}
+              </p>
+              <p className="mt-1 text-xs leading-snug opacity-85">
+                {unknownSubtitle}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {origin && (
+          <div className="shrink-0 rounded-xl border border-black/10 bg-white p-1 sm:rounded-2xl sm:p-1.5">
+            <QRCodeSVG
+              value={origin}
+              size={54}
+              bgColor="#ffffff"
+              fgColor={themeKey === "pearl" ? "#16335b" : "#4c0519"}
+              level="L"
+              className="h-[46px] w-[46px] sm:h-[54px] sm:w-[54px]"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Zone 3: Sleek modern stamp progress dock */}
+      <div className="relative">
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <p
+            className={`text-[10px] font-bold tracking-wide uppercase ${theme.backLabelText}`}
+          >
+            {copy.stampsHeading}
+          </p>
+          <span
+            dir="ltr"
+            className={`font-mono text-[10px] font-bold ${theme.backLabelText}`}
+          >
+            {earnedCount}/{stampsMeta.length}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-1 sm:flex sm:flex-wrap sm:gap-1.5">
+          {stampsMeta.map((stamp) => {
+            const earned = stamps[stamp.key];
+            return (
+              <span
+                key={stamp.key}
+                className={`inline-flex min-w-0 items-center gap-1 rounded-lg px-2 py-1 text-[9.5px] font-semibold leading-none sm:text-[10px] ${
+                  earned ? theme.backStampEarned : theme.backStampLocked
+                }`}
+              >
+                {earned ? (
+                  <CheckCircle2
+                    aria-hidden="true"
+                    className="h-3 w-3 shrink-0"
+                  />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className={`h-1.5 w-1.5 shrink-0 rounded-full ${theme.backStampDot}`}
+                  />
+                )}
+                <span className="truncate">{stamp.label}</span>
+              </span>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface DonorCardProps {
   card: DonorCardData;
   stamps: Progress["stamps"];
@@ -389,10 +619,6 @@ export function DonorCard({
   onToggleFlip,
 }: DonorCardProps) {
   const { locale } = usePreferences();
-  const copy = UI_COPY[locale].card;
-  const info = CAMPAIGN_INFO_BY_LOCALE[locale];
-  const stampsMeta = getStampsMeta(locale);
-  const unknownSubtitle = BLOOD_TYPE_TITLES_BY_LOCALE[locale].unknown.subtitle;
   const reduced = useReducedMotion();
 
   const themeKey: CardTheme = card.theme ?? "crimson";
@@ -437,19 +663,6 @@ export function DonorCard({
     glareX.set(50);
     glareY.set(50);
   }
-
-  const isKnown = card.bloodType !== "unknown";
-  const giveTo = isKnown
-    ? redCellRecipients(
-        card.bloodType as Exclude<typeof card.bloodType, "unknown">
-      )
-    : [];
-  const receiveFrom = isKnown
-    ? redCellDonors(
-        card.bloodType as Exclude<typeof card.bloodType, "unknown">
-      )
-    : [];
-  const earnedCount = stampsMeta.filter((s) => stamps[s.key]).length;
 
   return (
     <div
@@ -526,186 +739,10 @@ export function DonorCard({
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
-              background: theme.backBg,
-              boxShadow: theme.backShadow,
-              border: theme.backBorder,
             }}
-            className={`absolute inset-0 flex flex-col justify-between overflow-hidden rounded-[24px] p-3 sm:p-4 ${theme.backText}`}
+            className="absolute inset-0"
           >
-            {/* Top 3px metallic accent bar */}
-            <div
-              aria-hidden="true"
-              style={{ background: theme.backTopBar }}
-              className="pointer-events-none absolute inset-x-0 top-0 h-[3px]"
-            />
-
-            {/* Subtle matching guilloché contour waves */}
-            <svg
-              viewBox="0 0 420 265"
-              fill="none"
-              aria-hidden="true"
-              opacity="0.55"
-              className="pointer-events-none absolute inset-0 h-full w-full"
-            >
-              {GUILLOCHE_PATHS.map((d, idx) => (
-                <path
-                  key={idx}
-                  d={d}
-                  stroke={theme.waveStroke}
-                  strokeWidth="1.1"
-                  strokeLinecap="round"
-                />
-              ))}
-            </svg>
-
-            <BrandLogo
-              variant="watermark"
-              className={`pointer-events-none absolute -bottom-12 -end-8 h-44 w-44 ${theme.backWatermarkClass}`}
-            />
-
-            {/* Zone 1: Slim official top pass header */}
-            <div
-              className={`relative flex items-center justify-between gap-2 border-b pb-1.5 sm:pb-2 ${theme.backDivider}`}
-            >
-              <div className="flex min-w-0 items-center gap-2">
-                <BrandLogo
-                  variant={themeKey === "pearl" ? "crimson" : "light"}
-                  className="h-6 w-6 shrink-0 sm:h-7 sm:w-7"
-                />
-                <span
-                  aria-hidden="true"
-                  className={`h-4 w-px shrink-0 ${
-                    themeKey === "pearl" ? "bg-blood-200" : "bg-white/25"
-                  }`}
-                />
-                <span className="truncate text-[11px] font-extrabold tracking-wide opacity-95">
-                  {info.brand}
-                </span>
-              </div>
-              <span
-                dir="ltr"
-                className={`shrink-0 rounded-full px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider ${theme.backIdPill}`}
-              >
-                {card.id}
-              </span>
-            </div>
-
-            {/* Zone 2: Symmetrical center pass body */}
-            <div className="relative flex items-center justify-between gap-2 sm:gap-3">
-              <div
-                className={`min-w-0 flex-1 rounded-2xl border p-1.5 sm:p-2.5 ${theme.backPanel}`}
-              >
-                {isKnown ? (
-                  <div className="space-y-1 sm:space-y-1.5">
-                    <div>
-                      <p
-                        className={`text-[10px] font-bold tracking-wide uppercase ${theme.backLabelText}`}
-                      >
-                        {copy.canGiveTo}
-                      </p>
-                      <div className="mt-1 flex flex-wrap gap-1">
-                        {giveTo.map((t) => (
-                          <span
-                            key={t}
-                            dir="ltr"
-                            className={`inline-block rounded-md px-1.5 py-0.5 text-[9.5px] font-bold leading-none sm:text-[10px] ${theme.backGivePill}`}
-                          >
-                            {formatBloodType(t)}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div
-                      className={`border-t pt-1 sm:pt-1.5 ${theme.backDivider}`}
-                    >
-                      <p
-                        className={`text-[10px] font-bold tracking-wide uppercase ${theme.backLabelText}`}
-                      >
-                        {copy.canReceiveFrom}
-                      </p>
-                      <div className="mt-1 flex flex-wrap gap-1">
-                        {receiveFrom.map((t) => (
-                          <span
-                            key={t}
-                            dir="ltr"
-                            className={`inline-block rounded-md px-1.5 py-0.5 text-[9.5px] font-bold leading-none sm:text-[10px] ${theme.backReceivePill}`}
-                          >
-                            {formatBloodType(t)}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <p
-                      className={`text-[10px] font-bold tracking-wide uppercase ${theme.backLabelText}`}
-                    >
-                      {BLOOD_TYPE_TITLES_BY_LOCALE[locale].unknown.title}
-                    </p>
-                    <p className="mt-1 text-xs leading-snug opacity-85">
-                      {unknownSubtitle}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {origin && (
-                <div className="shrink-0 rounded-xl bg-white p-1 shadow-sm ring-1 ring-black/10 sm:rounded-2xl sm:p-1.5">
-                  <QRCodeSVG
-                    value={origin}
-                    size={54}
-                    bgColor="#ffffff"
-                    fgColor={themeKey === "pearl" ? "#16335b" : "#4c0519"}
-                    level="L"
-                    className="h-[46px] w-[46px] sm:h-[54px] sm:w-[54px]"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Zone 3: Sleek modern stamp progress dock */}
-            <div className="relative">
-              <div className="mb-1 flex items-center justify-between gap-2">
-                <p
-                  className={`text-[10px] font-bold tracking-wide uppercase ${theme.backLabelText}`}
-                >
-                  {copy.stampsHeading}
-                </p>
-                <span
-                  dir="ltr"
-                  className={`font-mono text-[10px] font-bold ${theme.backLabelText}`}
-                >
-                  {earnedCount}/{stampsMeta.length}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-1 sm:flex sm:flex-wrap sm:gap-1.5">
-                {stampsMeta.map((stamp) => {
-                  const earned = stamps[stamp.key];
-                  return (
-                    <span
-                      key={stamp.key}
-                      className={`inline-flex min-w-0 items-center gap-1 rounded-lg px-2 py-1 text-[9.5px] font-semibold leading-none sm:text-[10px] ${
-                        earned ? theme.backStampEarned : theme.backStampLocked
-                      }`}
-                    >
-                      {earned ? (
-                        <CheckCircle2
-                          aria-hidden="true"
-                          className="h-3 w-3 shrink-0"
-                        />
-                      ) : (
-                        <span
-                          aria-hidden="true"
-                          className={`h-1.5 w-1.5 shrink-0 rounded-full ${theme.backStampDot}`}
-                        />
-                      )}
-                      <span className="truncate">{stamp.label}</span>
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
+            <CardBackFace card={card} stamps={stamps} origin={origin} />
           </div>
         </motion.div>
       </motion.div>

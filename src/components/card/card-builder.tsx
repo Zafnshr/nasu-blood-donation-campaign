@@ -1,12 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type FormEvent } from "react";
-import { toPng } from "html-to-image";
-import { Download, Pencil, RefreshCw, Share2 } from "lucide-react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  Download,
+  Layers,
+  LayoutGrid,
+  Pencil,
+  RefreshCw,
+  Share2,
+  X,
+} from "lucide-react";
 import { getStampsMeta } from "@/data/campaign";
 import { UI_COPY } from "@/data/translations";
 import { BLOOD_TYPES, formatBloodType } from "@/lib/blood";
+import {
+  downloadBlobFile,
+  isIosDevice,
+  renderElementToPng,
+} from "@/lib/export-image";
 import { updateProgress } from "@/lib/progress-store";
 import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
@@ -19,6 +31,7 @@ import { Confetti } from "@/components/ui/confetti";
 import { StampBadge } from "@/components/ui/stamp-badge";
 import {
   CARD_AURA_CLASSES,
+  CardBackFace,
   CardFrontFace,
   DonorCard,
 } from "@/components/card/donor-card";
@@ -49,7 +62,9 @@ export function CardBuilder() {
 
   const progress = useProgress();
   const origin = useOrigin();
-  const exportRef = useRef<HTMLDivElement | null>(null);
+  const frontExportRef = useRef<HTMLDivElement | null>(null);
+  const backExportRef = useRef<HTMLDivElement | null>(null);
+  const combinedExportRef = useRef<HTMLDivElement | null>(null);
 
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState("");
@@ -61,6 +76,20 @@ export function CardBuilder() {
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [justCreated, setJustCreated] = useState(false);
+  const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
+  const [iosPreviewUrls, setIosPreviewUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!downloadMenuOpen && iosPreviewUrls.length === 0) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setDownloadMenuOpen(false);
+        setIosPreviewUrls([]);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [downloadMenuOpen, iosPreviewUrls.length]);
 
   const savedCard = progress.card;
   const showForm = !savedCard || editing;
@@ -127,39 +156,99 @@ export function CardBuilder() {
     setEditing(false);
   }
 
-  async function renderCardPng(): Promise<string> {
-    if (!exportRef.current) {
-      throw new Error("Card export element not mounted");
-    }
-    const opts = {
-      pixelRatio: 3,
-      cacheBust: true,
-    };
-    await toPng(exportRef.current, opts);
-    return toPng(exportRef.current, opts);
-  }
-
-  function triggerDownload(dataUrl: string, cardName: string) {
+  function buildFilename(cardName: string, suffix = "front"): string {
     const slug = cardName
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
-    const link = document.createElement("a");
-    link.download = `nasu-donor-card-${slug || "hero"}.png`;
-    link.href = dataUrl;
-    link.click();
+    return `nasu-donor-card-${slug || "hero"}-${suffix}.png`;
   }
 
-  async function handleDownload() {
+  async function deliverImages(
+    items: Array<{ dataUrl: string; blob: Blob; filename: string }>
+  ) {
+    if (isIosDevice()) {
+      const files = items.map(
+        (item) => new File([item.blob], item.filename, { type: "image/png" })
+      );
+      let shared = false;
+      try {
+        if (
+          typeof navigator.canShare === "function" &&
+          navigator.canShare({ files })
+        ) {
+          await navigator.share({
+            files,
+            title: copy.shareCardTitle,
+          });
+          shared = true;
+        }
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          return false;
+        }
+      }
+      if (!shared) {
+        setIosPreviewUrls(items.map((item) => item.dataUrl));
+      }
+      return true;
+    }
+
+    for (let i = 0; i < items.length; i += 1) {
+      downloadBlobFile(items[i].blob, items[i].filename);
+      if (i < items.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 220));
+      }
+    }
+    return true;
+  }
+
+  async function handleDownloadOption(
+    mode: "front" | "back" | "combined" | "separate"
+  ) {
     if (!savedCard || busy) return;
+    setDownloadMenuOpen(false);
     setBusy(true);
     setFeedback("");
     try {
-      const dataUrl = await renderCardPng();
-      triggerDownload(dataUrl, savedCard.name);
+      const items: Array<{ dataUrl: string; blob: Blob; filename: string }> =
+        [];
+
+      if (mode === "front" || mode === "separate") {
+        if (!frontExportRef.current) throw new Error("Front node missing");
+        const rendered = await renderElementToPng(frontExportRef.current);
+        items.push({
+          ...rendered,
+          filename: buildFilename(savedCard.name, "front"),
+        });
+      }
+
+      if (mode === "back" || mode === "separate") {
+        if (!backExportRef.current) throw new Error("Back node missing");
+        const rendered = await renderElementToPng(backExportRef.current);
+        items.push({
+          ...rendered,
+          filename: buildFilename(savedCard.name, "back"),
+        });
+      }
+
+      if (mode === "combined") {
+        if (!combinedExportRef.current)
+          throw new Error("Combined node missing");
+        const rendered = await renderElementToPng(combinedExportRef.current);
+        items.push({
+          ...rendered,
+          filename: buildFilename(savedCard.name, "both"),
+        });
+      }
+
+      const delivered = await deliverImages(items);
+      if (!delivered) return;
+
       trackEvent("card_download_png", {
         theme: savedCard.theme ?? "crimson",
         blood_type: savedCard.bloodType,
+        mode,
       });
       setFeedback(copy.downloadedToast);
     } catch {
@@ -170,13 +259,11 @@ export function CardBuilder() {
   }
 
   async function handleShare() {
-    if (!savedCard || busy) return;
+    if (!savedCard || !frontExportRef.current || busy) return;
     setBusy(true);
     setFeedback("");
     try {
-      const dataUrl = await renderCardPng();
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
+      const { dataUrl, blob } = await renderElementToPng(frontExportRef.current);
       const file = new File([blob], "nasu-donor-card.png", {
         type: "image/png",
       });
@@ -196,8 +283,15 @@ export function CardBuilder() {
           theme: savedCard.theme ?? "crimson",
         });
         setFeedback(copy.sharedToast);
+      } else if (isIosDevice()) {
+        setIosPreviewUrls([dataUrl]);
+        trackEvent("card_share", {
+          method: "fallback_download",
+          theme: savedCard.theme ?? "crimson",
+        });
+        setFeedback(copy.downloadedToast);
       } else {
-        triggerDownload(dataUrl, savedCard.name);
+        downloadBlobFile(blob, buildFilename(savedCard.name, "front"));
         trackEvent("card_share", {
           method: "fallback_download",
           theme: savedCard.theme ?? "crimson",
@@ -434,16 +528,45 @@ export function CardBuilder() {
               onToggleFlip={handleToggleFlip}
             />
 
-            {/* Offscreen flat copy for clean html-to-image PNG export */}
+            {/* Offscreen flat copies for clean html-to-image PNG export (0x0 viewport wrapper avoids iOS WebKit culling) */}
             <div
               aria-hidden="true"
-              style={{ position: "fixed", left: "-10000px", top: 0 }}
+              style={{
+                position: "fixed",
+                left: 0,
+                top: 0,
+                width: 0,
+                height: 0,
+                overflow: "hidden",
+                pointerEvents: "none",
+              }}
             >
               <CardFrontFace
                 card={savedCard}
-                exportRef={exportRef}
+                exportRef={frontExportRef}
                 fixedExport
               />
+              <CardBackFace
+                card={savedCard}
+                stamps={progress.stamps}
+                origin={origin}
+                exportRef={backExportRef}
+                fixedExport
+              />
+              <div
+                ref={combinedExportRef}
+                className={`flex w-[468px] flex-col gap-5 rounded-[32px] p-6 ${
+                  activeTheme === "midnight" ? "bg-[#121011]" : "bg-[#faf8f6]"
+                }`}
+              >
+                <CardFrontFace card={savedCard} fixedExport />
+                <CardBackFace
+                  card={savedCard}
+                  stamps={progress.stamps}
+                  origin={origin}
+                  fixedExport
+                />
+              </div>
             </div>
 
             {/* Quick finish switcher */}
@@ -473,7 +596,11 @@ export function CardBuilder() {
             </div>
 
             <div className="mx-auto grid max-w-md grid-cols-2 gap-2.5 sm:grid-cols-4">
-              <Button onClick={handleDownload} disabled={busy} size="sm">
+              <Button
+                onClick={() => setDownloadMenuOpen(true)}
+                disabled={busy}
+                size="sm"
+              >
                 <Download aria-hidden="true" className="h-4 w-4" />
                 {copy.download}
               </Button>
@@ -541,6 +668,113 @@ export function CardBuilder() {
               })}
             </div>
           </Card>
+        </div>
+      )}
+
+      {downloadMenuOpen && savedCard && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={copy.downloadModalTitle}
+          onClick={() => setDownloadMenuOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-3xl border border-stone-200 bg-white p-5 shadow-2xl dark:border-[#302428] dark:bg-[#1a1316]"
+          >
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <p className="text-sm font-extrabold text-ink dark:text-[#f5f2f0]">
+                {copy.downloadModalTitle}
+              </p>
+              <button
+                type="button"
+                onClick={() => setDownloadMenuOpen(false)}
+                aria-label={copy.iosSaveClose}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-stone-500 transition-colors hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/10"
+              >
+                <X aria-hidden="true" className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="grid gap-2">
+              {(
+                [
+                  {
+                    mode: "front",
+                    label: copy.downloadFront,
+                    Icon: Download,
+                  },
+                  {
+                    mode: "back",
+                    label: copy.downloadBack,
+                    Icon: RefreshCw,
+                  },
+                  {
+                    mode: "combined",
+                    label: copy.downloadCombined,
+                    Icon: Layers,
+                  },
+                  {
+                    mode: "separate",
+                    label: copy.downloadSeparate,
+                    Icon: LayoutGrid,
+                  },
+                ] as const
+              ).map(({ mode, label, Icon }) => (
+                <button
+                  key={mode}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => handleDownloadOption(mode)}
+                  className="flex min-h-12 w-full items-center gap-3 rounded-2xl border border-stone-200 bg-[#f6f3ef] px-4 py-2.5 text-start text-sm font-bold text-ink transition-colors hover:border-blood-400 hover:bg-blood-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blood-500 disabled:opacity-50 dark:border-[#2e2629] dark:bg-[#120e10] dark:text-[#f5f2f0] dark:hover:border-blood-500/60"
+                >
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blood-600/10 text-blood-700 dark:bg-rose-400/15 dark:text-rose-200">
+                    <Icon aria-hidden="true" className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {iosPreviewUrls.length > 0 && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={copy.iosSaveTitle}
+          onClick={() => setIosPreviewUrls([])}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-y-auto bg-black/75 p-4 backdrop-blur-md"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex max-h-[90vh] w-full max-w-[400px] flex-col items-center gap-3 overflow-y-auto rounded-3xl border border-white/15 bg-[#1c181a] p-4 text-white shadow-2xl"
+          >
+            <div className="flex w-full items-center justify-between gap-2">
+              <p className="text-sm font-extrabold">{copy.iosSaveTitle}</p>
+              <button
+                type="button"
+                onClick={() => setIosPreviewUrls([])}
+                aria-label={copy.iosSaveClose}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
+              >
+                <X aria-hidden="true" className="h-4 w-4" />
+              </button>
+            </div>
+            {iosPreviewUrls.map((url, idx) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={idx}
+                src={url}
+                alt={copy.shareCardTitle}
+                className="w-full rounded-2xl shadow-lg"
+              />
+            ))}
+            <p className="text-center text-xs font-semibold text-rose-100">
+              {copy.iosSaveHint}
+            </p>
+          </div>
         </div>
       )}
     </div>

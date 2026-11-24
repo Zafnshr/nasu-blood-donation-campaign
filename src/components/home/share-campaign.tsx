@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, type RefObject } from "react";
-import { toPng } from "html-to-image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Check,
@@ -15,6 +14,11 @@ import {
 } from "lucide-react";
 import { CAMPAIGN_INFO_BY_LOCALE } from "@/data/campaign";
 import { UI_COPY } from "@/data/translations";
+import {
+  downloadBlobFile,
+  isIosDevice,
+  renderElementToPng,
+} from "@/lib/export-image";
 import { trackEvent } from "@/lib/track";
 import { usePreferences } from "@/lib/use-preferences";
 import { useOrigin } from "@/lib/use-progress";
@@ -147,11 +151,13 @@ function QrFrameCard({
 export function ShareCampaignSection() {
   const { locale } = usePreferences();
   const copy = UI_COPY[locale].share;
+  const cardCopy = UI_COPY[locale].card;
   const origin = useOrigin();
   const reduced = useReducedMotion();
 
   const exportRef = useRef<HTMLDivElement | null>(null);
   const [spotlightOpen, setSpotlightOpen] = useState(false);
+  const [iosPreviewUrl, setIosPreviewUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
   const [feedbackKey, setFeedbackKey] = useState<"saved" | "shared" | "err" | null>(null);
@@ -166,15 +172,16 @@ export function ShareCampaignSection() {
           : "";
 
   useEffect(() => {
-    if (!spotlightOpen) return;
+    if (!spotlightOpen && !iosPreviewUrl) return;
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setSpotlightOpen(false);
+        setIosPreviewUrl(null);
       }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [spotlightOpen]);
+  }, [spotlightOpen, iosPreviewUrl]);
 
   const shareUrl = origin;
   const whatsappText = shareUrl
@@ -229,13 +236,35 @@ export function ShareCampaignSection() {
     setSaving(true);
     setFeedbackKey(null);
     try {
-      const opts = { pixelRatio: 3, cacheBust: true };
-      await toPng(exportRef.current, opts);
-      const dataUrl = await toPng(exportRef.current, opts);
-      const link = document.createElement("a");
-      link.download = "nasu-campaign-qr.png";
-      link.href = dataUrl;
-      link.click();
+      const { dataUrl, blob } = await renderElementToPng(exportRef.current);
+      if (isIosDevice()) {
+        const file = new File([blob], "nasu-campaign-qr.png", {
+          type: "image/png",
+        });
+        let shared = false;
+        try {
+          if (
+            typeof navigator.canShare === "function" &&
+            navigator.canShare({ files: [file] })
+          ) {
+            await navigator.share({
+              files: [file],
+              title: copy.shareTitle,
+            });
+            shared = true;
+          }
+        } catch (err) {
+          if (err instanceof DOMException && err.name === "AbortError") {
+            setSaving(false);
+            return;
+          }
+        }
+        if (!shared) {
+          setIosPreviewUrl(dataUrl);
+        }
+      } else {
+        downloadBlobFile(blob, "nasu-campaign-qr.png");
+      }
       trackEvent("qr_card_download");
       setFeedbackKey("saved");
     } catch {
@@ -399,13 +428,57 @@ export function ShareCampaignSection() {
         ))}
       </div>
 
-      {/* Offscreen static QR frame for crisp 3x PNG download */}
+      {/* Offscreen static QR frame for crisp PNG download (kept in viewport for iOS WebKit) */}
       <div
         aria-hidden="true"
-        style={{ position: "fixed", left: "-10000px", top: 0 }}
+        style={{
+          position: "fixed",
+          left: 0,
+          top: 0,
+          width: 0,
+          height: 0,
+          overflow: "hidden",
+          pointerEvents: "none",
+        }}
       >
         <QrFrameCard isExport exportRef={exportRef} />
       </div>
+
+      {iosPreviewUrl && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={cardCopy.iosSaveTitle}
+          onClick={() => setIosPreviewUrl(null)}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/75 p-4 backdrop-blur-md"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex w-full max-w-[360px] flex-col items-center gap-3 rounded-3xl border border-white/15 bg-[#1c181a] p-4 text-white shadow-2xl"
+          >
+            <div className="flex w-full items-center justify-between gap-2">
+              <p className="text-sm font-extrabold">{cardCopy.iosSaveTitle}</p>
+              <button
+                type="button"
+                onClick={() => setIosPreviewUrl(null)}
+                aria-label={cardCopy.iosSaveClose}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
+              >
+                <X aria-hidden="true" className="h-4 w-4" />
+              </button>
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={iosPreviewUrl}
+              alt={copy.scanHint}
+              className="w-full rounded-2xl shadow-lg"
+            />
+            <p className="text-center text-xs font-semibold text-rose-100">
+              {cardCopy.iosSaveHint}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Full-Screen Scan Spotlight Modal */}
       <AnimatePresence>

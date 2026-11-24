@@ -223,6 +223,14 @@ export const UI_COPY: Record<
       collectSub: string;
       shareCardTitle: string;
       shareCardText: string;
+      downloadModalTitle: string;
+      downloadFront: string;
+      downloadBack: string;
+      downloadCombined: string;
+      downloadSeparate: string;
+      iosSaveTitle: string;
+      iosSaveHint: string;
+      iosSaveClose: string;
     };
     share: {
       eyebrow: string;
@@ -525,6 +533,14 @@ export const UI_COPY: Record<
       collectSub: "الأختام التي تفتحها تظهر تلقائياً على ظهر بطاقتك.",
       shareCardTitle: "بطاقة المتبرع الخاصة بي — NASU",
       shareCardText: "أنشأت للتو بطاقتي التفاعلية في حملة NASU للتبرع بالدم 🩸",
+      downloadModalTitle: "اختر شكل تحميل البطاقة",
+      downloadFront: "الوجه الأمامي فقط",
+      downloadBack: "الوجه الخلفي فقط (الأختام و QR)",
+      downloadCombined: "الوجهان في صورة واحدة",
+      downloadSeparate: "صورتان منفصلتان (الأمامي + الخلفي)",
+      iosSaveTitle: "احفظ بطاقتك في الصور",
+      iosSaveHint: "اضغط مطولاً على الصورة بالأسفل ثم اختر (حفظ في الصور).",
+      iosSaveClose: "إغلاق",
     },
     share: {
       eyebrow: "شارك الأثر",
@@ -846,6 +862,14 @@ export const UI_COPY: Record<
       shareCardTitle: "My NASU Donor Card",
       shareCardText:
         "I just made my donor card at the NASU Blood Donation Campaign 🩸",
+      downloadModalTitle: "Choose how to download",
+      downloadFront: "Front side only",
+      downloadBack: "Back side only (Stamps & QR)",
+      downloadCombined: "Both sides in one image",
+      downloadSeparate: "Two separate images (Front + Back)",
+      iosSaveTitle: "Save card to Photos",
+      iosSaveHint: "Press and hold the image below, then tap Save to Photos.",
+      iosSaveClose: "Close",
     },
     share: {
       eyebrow: "Pass the drop",
